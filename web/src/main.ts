@@ -9,6 +9,7 @@ import {
   trustLabel,
   clearRecipients,
 } from "./recipients";
+import { solvePoW, getDifficulty } from "./pow";
 import { sendMessage, SendProgress } from "./send";
 import { applyDeepLink } from "./deeplink";
 
@@ -29,6 +30,13 @@ const sendBtn = document.getElementById("send-btn") as HTMLButtonElement;
 const statusDiv = document.getElementById("status") as HTMLDivElement;
 const copyUrlLink = document.getElementById("copy-url-link") as HTMLAnchorElement;
 
+const debugSection = document.getElementById("debug-section") as HTMLDivElement | null;
+const debugDifficultyInput = document.getElementById("debug-difficulty-input") as HTMLInputElement | null;
+const debugApplyDifficultyBtn = document.getElementById("debug-apply-difficulty") as HTMLButtonElement | null;
+const debugCurrentDifficulty = document.getElementById("debug-current-difficulty") as HTMLSpanElement | null;
+const debugTestPowBtn = document.getElementById("debug-test-pow") as HTMLButtonElement | null;
+const debugPowResult = document.getElementById("debug-pow-result") as HTMLPreElement | null;
+
 // --- State ---
 const pendingAddresses = new Set<string>();
 const files: File[] = [];
@@ -48,6 +56,91 @@ function commitRecipientsFromInput(): void {
     addRecipientBadge(address);
   }
   recipientsInput.value = "";
+}
+
+function isLocalhost(): boolean {
+  return (
+    location.hostname === "localhost" ||
+    location.hostname === "127.0.0.1" ||
+    location.hostname === "::1" ||
+    location.hostname === "[::1]"
+  );
+}
+
+function setDifficultyMeta(value: number): void {
+  const meta = document.querySelector('meta[name="pow-difficulty"]') as HTMLMetaElement | null;
+  if (meta) {
+    meta.content = String(value);
+  }
+}
+
+function syncDebugDifficulty(): void {
+  if (!debugCurrentDifficulty || !debugDifficultyInput) {
+    return;
+  }
+  const difficulty = getDifficulty();
+  debugCurrentDifficulty.textContent = String(difficulty);
+  debugDifficultyInput.value = String(difficulty);
+}
+
+function initDebugSection(): void {
+  if (!debugSection) {
+    return;
+  }
+
+  if (!isLocalhost()) {
+    debugSection.hidden = true;
+    return;
+  }
+
+  debugSection.hidden = false;
+  syncDebugDifficulty();
+
+  debugApplyDifficultyBtn?.addEventListener("click", () => {
+    if (!debugDifficultyInput || !debugPowResult) {
+      return;
+    }
+    const parsed = parseInt(debugDifficultyInput.value, 10);
+    if (isNaN(parsed) || parsed < 0 || parsed > 30) {
+      debugPowResult.textContent = "Please enter a PoW difficulty between 0 and 30.";
+      return;
+    }
+    setDifficultyMeta(parsed);
+    syncDebugDifficulty();
+    debugPowResult.textContent = `PoW difficulty set to ${parsed}.`;
+  });
+
+  debugTestPowBtn?.addEventListener("click", async () => {
+    if (!debugPowResult || !debugTestPowBtn) {
+      return;
+    }
+
+    const difficulty = getDifficulty();
+    let hashesChecked = 0;
+    const started = performance.now();
+
+    debugTestPowBtn.disabled = true;
+    debugPowResult.textContent = `Running PoW test at difficulty ${difficulty}...`;
+
+    try {
+      const token = await solvePoW(difficulty, (count) => {
+        hashesChecked = count;
+        debugPowResult.textContent = `Running PoW test at difficulty ${difficulty}...\nTried ${count.toLocaleString()} hashes.`;
+      });
+      const elapsedMs = Math.round(performance.now() - started);
+      debugPowResult.textContent =
+        `Done.\n` +
+        `Difficulty: ${difficulty}\n` +
+        `Time: ${elapsedMs} ms\n` +
+        `Hashes checked: ${hashesChecked.toLocaleString()}\n` +
+        `Token: ${token}`;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "PoW test failed";
+      debugPowResult.textContent = `Error: ${msg}`;
+    } finally {
+      debugTestPowBtn.disabled = false;
+    }
+  });
 }
 
 // --- Recipient badge management ---
@@ -287,6 +380,7 @@ sendBtn.addEventListener("click", async () => {
 
 // --- Deep-link ---
 applyDeepLink(recipientsInput, bodyInput, addRecipientBadge);
+initDebugSection();
 
 // --- Copy URL with recipients ---
 copyUrlLink.addEventListener("click", (e) => {

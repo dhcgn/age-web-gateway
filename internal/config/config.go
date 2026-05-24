@@ -20,8 +20,9 @@ type Config struct {
 	SMTPPass string `json:"smtp_pass"`
 	SMTPFrom string `json:"smtp_from"`
 
-	PoWDifficulty      int `json:"pow_difficulty"`
-	PoWValiditySeconds int `json:"pow_validity_seconds"`
+	PoWDifficulty               int `json:"pow_difficulty"`
+	PoWDifficultyFactorMailSend int `json:"pow_difficulty_factor_mail_send"`
+	PoWValiditySeconds          int `json:"pow_validity_seconds"`
 
 	DNSResolver             string `json:"dns_resolver"`
 	WellknownTimeoutSeconds int    `json:"wellknown_timeout_seconds"`
@@ -63,15 +64,16 @@ func Load(configPath string) (Config, error) {
 
 func defaults() Config {
 	return Config{
-		ListenAddr:              ":8080",
-		SMTPHost:                "localhost",
-		SMTPPort:                587,
-		SMTPFrom:                "noreply@localhost",
-		MailBackend:             "smtp",
-		PoWDifficulty:           4,
-		PoWValiditySeconds:      60,
-		WellknownTimeoutSeconds: 5,
-		LogLevel:                "info",
+		ListenAddr:                  ":8080",
+		SMTPHost:                    "localhost",
+		SMTPPort:                    587,
+		SMTPFrom:                    "noreply@localhost",
+		MailBackend:                 "smtp",
+		PoWDifficulty:               16,
+		PoWDifficultyFactorMailSend: 2,
+		PoWValiditySeconds:          60,
+		WellknownTimeoutSeconds:     5,
+		LogLevel:                    "info",
 	}
 }
 
@@ -104,6 +106,9 @@ func (c *Config) applyEnv() {
 	}
 	if v, err := strconv.Atoi(os.Getenv("POW_DIFFICULTY")); err == nil {
 		c.PoWDifficulty = v
+	}
+	if v, err := strconv.Atoi(os.Getenv("POW_DIFFICULTY_FACTOR_MAIL_SEND")); err == nil {
+		c.PoWDifficultyFactorMailSend = v
 	}
 	if v, err := strconv.Atoi(os.Getenv("POW_VALIDITY_SECONDS")); err == nil {
 		c.PoWValiditySeconds = v

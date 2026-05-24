@@ -1,4 +1,4 @@
-import { solvePoW, getDifficulty } from "./pow";
+import { solvePoW, getSendDifficulty } from "./pow";
 import { encryptBody, encryptFile } from "./encrypt";
 import { getAllKeys, getResolvedRecipients } from "./recipients";
 
@@ -52,7 +52,7 @@ export async function sendMessage(
 
   // 3. Solve PoW.
   if (onProgress) onProgress({ stage: "pow" });
-  const difficulty = getDifficulty();
+  const difficulty = getSendDifficulty();
   const powToken = await solvePoW(difficulty, (h) => {
     if (onProgress) onProgress({ stage: "pow", hashesChecked: h });
   });

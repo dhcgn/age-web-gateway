@@ -350,3 +350,78 @@ footer {
   word-break: break-all;
   margin: 0;
 }
+
+/* Debug section */
+.debug-section {
+  margin-top: 3rem;
+  padding: 1rem;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: rgba(99, 102, 241, 0.06);
+}
+
+.debug-section h2 {
+  font-size: 1.05rem;
+  margin-bottom: 0.25rem;
+}
+
+.debug-note {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.debug-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.debug-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.3rem;
+}
+
+.debug-controls input {
+  width: 96px;
+  padding: 0.45rem 0.6rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+}
+
+.debug-controls button,
+.debug-test-btn {
+  padding: 0.45rem 0.7rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.debug-controls button:hover,
+.debug-test-btn:hover {
+  border-color: var(--primary);
+}
+
+.debug-meta-label {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.debug-result {
+  margin-top: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.65rem;
+  min-height: 70px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="pow-difficulty" content="__POW_DIFFICULTY__">
+  <meta name="pow-difficulty-send" content="__POW_DIFFICULTY_SEND__">
   <meta name="app-version" content="__APP_VERSION__">
   <title>agemail – Send Encrypted Messages</title>
   <link rel="stylesheet" href="styles.css">
@@ -77,6 +78,28 @@
 "your-domain.com;dave@your-domain.com;age1a3xsw5j5d27k4zmp5wzr7kp49m7gvgt87f32gq3he7da0r4jne6qyk4mmy"</pre>
       <h3>HTTPS</h3>
       <pre class="code-block">https://your-domain.com/.well-known/age</pre>
+    </section>
+
+    <section id="debug-section" class="debug-section" hidden>
+      <h2>Debug</h2>
+      <p class="debug-note">Visible only on localhost.</p>
+
+      <div class="debug-grid">
+        <div>
+          <label for="debug-difficulty-input">PoW difficulty</label>
+          <div class="debug-controls">
+            <input id="debug-difficulty-input" type="number" min="0" max="30" step="1">
+            <button id="debug-apply-difficulty" type="button">Apply</button>
+          </div>
+        </div>
+        <div>
+          <span class="debug-meta-label">Current effective difficulty:</span>
+          <strong id="debug-current-difficulty">-</strong>
+        </div>
+      </div>
+
+      <button id="debug-test-pow" class="debug-test-btn" type="button">Test PoW</button>
+      <pre id="debug-pow-result" class="debug-result">Ready.</pre>
     </section>
   </main>
 

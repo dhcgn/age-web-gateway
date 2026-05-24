@@ -41,11 +41,18 @@ func main() {
 	slog.SetDefault(logger)
 
 	version := resolvedVersion()
+	powFactorMailSend := cfg.PoWDifficultyFactorMailSend
+	if powFactorMailSend < 1 {
+		powFactorMailSend = 1
+	}
+	powDifficultySend := cfg.PoWDifficulty * powFactorMailSend
 	slog.Debug("configuration loaded",
 		"config_file", *configPath,
 		"version", version,
 		"listen_addr", cfg.ListenAddr,
 		"pow_difficulty", cfg.PoWDifficulty,
+		"pow_difficulty_factor_mail_send", powFactorMailSend,
+		"pow_difficulty_send", powDifficultySend,
 		"pow_validity_s", cfg.PoWValiditySeconds,
 		"smtp_host", cfg.SMTPHost,
 		"smtp_port", cfg.SMTPPort,
@@ -89,7 +96,8 @@ func main() {
 	// API handlers.
 	lookupHandler := &api.LookupHandler{LookupService: lookupSvc}
 	sendHandler := &api.SendHandler{LookupService: lookupSvc, MailService: mailSvc, From: mailFrom}
-	powMiddleware := api.PoWMiddleware(cfg.PoWDifficulty, cfg.PoWValiditySeconds, cache)
+	powLookupMiddleware := api.PoWMiddleware(cfg.PoWDifficulty, cfg.PoWValiditySeconds, cache)
+	powSendMiddleware := api.PoWMiddleware(powDifficultySend, cfg.PoWValiditySeconds, cache)
 
 	mux := http.NewServeMux()
 
@@ -98,8 +106,8 @@ func main() {
 	mux.HandleFunc("/health", api.HealthHandler)
 
 	// API endpoints — behind PoW middleware.
-	mux.Handle("/api/lookup", powMiddleware(lookupHandler))
-	mux.Handle("/api/send", powMiddleware(sendHandler))
+	mux.Handle("/api/lookup", powLookupMiddleware(lookupHandler))
+	mux.Handle("/api/send", powSendMiddleware(sendHandler))
 
 	// Static frontend — served from embedded FS.
 	// Inject PoW difficulty into index.html at startup.
@@ -108,7 +116,7 @@ func main() {
 		slog.Error("failed to open embedded web/dist", "error", err)
 		os.Exit(1)
 	}
-	indexHTML := injectRuntimeValues(distFS, cfg.PoWDifficulty, version)
+	indexHTML := injectRuntimeValues(distFS, cfg.PoWDifficulty, powDifficultySend, version)
 	staticHandler := http.FileServer(http.FS(distFS))
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -136,6 +144,8 @@ func main() {
 		"version", version,
 		"addr", cfg.ListenAddr,
 		"pow_difficulty", cfg.PoWDifficulty,
+		"pow_difficulty_factor_mail_send", powFactorMailSend,
+		"pow_difficulty_send", powDifficultySend,
 		"pow_validity_s", cfg.PoWValiditySeconds,
 	)
 	if err := server.ListenAndServe(); err != nil {
@@ -146,16 +156,17 @@ func main() {
 
 // injectRuntimeValues reads index.html from the embedded FS and injects
 // runtime placeholders for PoW difficulty and app version.
-func injectRuntimeValues(distFS fs.FS, difficulty int, version string) []byte {
+func injectRuntimeValues(distFS fs.FS, difficultyLookup int, difficultySend int, version string) []byte {
 	data, err := fs.ReadFile(distFS, "index.html")
 	if err != nil {
 		slog.Warn("could not read index.html for runtime injection", "error", err)
 		return []byte(fmt.Sprintf(`<!DOCTYPE html><html><body>agemail — index.html not found (%v)</body></html>`, err))
 	}
 	html := string(data)
-	html = strings.ReplaceAll(html, "__POW_DIFFICULTY__", strconv.Itoa(difficulty))
+	html = strings.ReplaceAll(html, "__POW_DIFFICULTY__", strconv.Itoa(difficultyLookup))
+	html = strings.ReplaceAll(html, "__POW_DIFFICULTY_SEND__", strconv.Itoa(difficultySend))
 	html = strings.ReplaceAll(html, "__APP_VERSION__", version)
-	slog.Debug("index.html runtime values injected", "difficulty", difficulty, "version", version)
+	slog.Debug("index.html runtime values injected", "difficulty_lookup", difficultyLookup, "difficulty_send", difficultySend, "version", version)
 	return []byte(html)
 }
 

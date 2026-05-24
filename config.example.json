@@ -6,6 +6,7 @@
   "smtp_pass": "",
   "smtp_from": "noreply@localhost",
   "pow_difficulty": 4,
+  "pow_difficulty_factor_mail_send": 2,
   "pow_validity_seconds": 60,
   "dns_resolver": "",
   "wellknown_timeout_seconds": 5,

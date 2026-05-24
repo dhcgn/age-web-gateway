@@ -14,6 +14,17 @@ export function getDifficulty(): number {
   return 4;
 }
 
+export function getSendDifficulty(): number {
+  const meta = document.querySelector('meta[name="pow-difficulty-send"]');
+  if (meta) {
+    const val = parseInt(meta.getAttribute("content") || "", 10);
+    if (!isNaN(val)) {
+      return val;
+    }
+  }
+  return getDifficulty();
+}
+
 export async function solvePoW(
   difficulty: number,
   onProgress?: PoWProgressCallback
