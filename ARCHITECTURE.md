@@ -286,6 +286,16 @@ naturally unique.
 `DIFFICULTY` and `VALIDITY` are configurable (§8). Difficulty is set **low for
 debugging/testing** (even 0–4 bits) and higher in production.
 
+Approximate expected hashes by difficulty (using `2^d`):
+
+| Difficulty | Expected hashes (approx.) |
+|---|---:|
+| 16 | 65,536 |
+| 17 | 131,072 |
+| 18 | 262,144 |
+| 19 | 524,288 |
+| 20 | 1,048,576 |
+
 ### 7.4 Caveats (honest limits of the simplification)
 - **Restart loses the cache.** The replay cache is in-memory; after a backend
   restart a captured token could be replayed within its ≤60 s window. Acceptable
