@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
 
@@ -23,7 +24,8 @@ func PoWMiddleware(difficulty int, validity int, cache *pow.ReplayCache) func(ht
 				if err == pow.ErrReplayed {
 					code = http.StatusTooManyRequests
 				}
-				http.Error(w, `{"error":"`+err.Error()+`"}`, code)
+					errJSON, _ := json.Marshal(map[string]string{"error": err.Error()})
+					http.Error(w, string(errJSON), code)
 				return
 			}
 
@@ -43,18 +45,45 @@ func CSPMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-// CORSMiddleware handles CORS for API requests (same-origin only, but needed for preflight).
-func CORSMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if strings.HasPrefix(r.URL.Path, "/api/") {
-			w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, X-PoW")
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-			if r.Method == http.MethodOptions {
-				w.WriteHeader(http.StatusNoContent)
-				return
+// CORSMiddleware handles CORS for API requests.
+// If allowedOrigins is non-empty, only those origins are permitted.
+// If empty, same-origin is inferred from the request Host header (suitable for local dev).
+func CORSMiddleware(allowedOrigins []string) func(http.Handler) http.Handler {
+	allowed := make(map[string]struct{}, len(allowedOrigins))
+	for _, o := range allowedOrigins {
+		allowed[strings.TrimRight(o, "/")] = struct{}{}
+	}
+
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if strings.HasPrefix(r.URL.Path, "/api/") {
+				origin := r.Header.Get("Origin")
+				if origin != "" && isAllowedOrigin(r, origin, allowed) {
+					w.Header().Set("Access-Control-Allow-Origin", origin)
+					w.Header().Set("Access-Control-Allow-Headers", "Content-Type, X-PoW")
+					w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+				}
+				if r.Method == http.MethodOptions {
+					w.WriteHeader(http.StatusNoContent)
+					return
+				}
 			}
-		}
-		next.ServeHTTP(w, r)
-	})
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+// isAllowedOrigin checks whether the origin is in the allow-list or, if the
+// list is empty, whether it matches the server's own Host header.
+func isAllowedOrigin(r *http.Request, origin string, allowed map[string]struct{}) bool {
+	if len(allowed) > 0 {
+		_, ok := allowed[origin]
+		return ok
+	}
+	// Fallback: same-origin check using Host header (local dev).
+	host := r.Host
+	if host == "" {
+		return false
+	}
+	return origin == "http://"+host || origin == "https://"+host
 }

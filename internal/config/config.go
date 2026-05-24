@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -26,6 +27,11 @@ type Config struct {
 	WellknownTimeoutSeconds int    `json:"wellknown_timeout_seconds"`
 
 	LogLevel string `json:"log_level"` // "debug", "info", "warn", "error"
+
+	// CORSAllowedOrigins is a list of origins permitted for CORS requests.
+	// If empty, same-origin is inferred from the Host header (suitable for local dev).
+	// Behind a reverse proxy, set this to the external origin(s), e.g. ["https://example.com"].
+	CORSAllowedOrigins []string `json:"cors_allowed_origins"`
 
 	// Mail backend: "smtp" (default) or "cloudflare".
 	MailBackend string `json:"mail_backend"`
@@ -110,6 +116,9 @@ func (c *Config) applyEnv() {
 	}
 	if v := os.Getenv("LOG_LEVEL"); v != "" {
 		c.LogLevel = v
+	}
+	if v := os.Getenv("CORS_ALLOWED_ORIGINS"); v != "" {
+		c.CORSAllowedOrigins = strings.Split(v, ",")
 	}
 	if v := os.Getenv("MAIL_BACKEND"); v != "" {
 		c.MailBackend = v

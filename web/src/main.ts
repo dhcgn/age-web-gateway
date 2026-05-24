@@ -33,6 +33,23 @@ const copyUrlLink = document.getElementById("copy-url-link") as HTMLAnchorElemen
 const pendingAddresses = new Set<string>();
 const files: File[] = [];
 
+function commitRecipientsFromInput(): void {
+  const raw = recipientsInput.value;
+  const addresses = raw
+    .split(/[\s,;]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  if (addresses.length === 0) {
+    return;
+  }
+
+  for (const address of addresses) {
+    addRecipientBadge(address);
+  }
+  recipientsInput.value = "";
+}
+
 // --- Recipient badge management ---
 function addRecipientBadge(address: string): void {
   if (pendingAddresses.has(address)) return;
@@ -90,13 +107,15 @@ function addRecipientBadge(address: string): void {
 
 // --- Recipients input ---
 recipientsInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" || e.key === "," || e.key === "Tab") {
+  if (
+    e.key === "Enter" ||
+    e.key === "," ||
+    e.key === ";" ||
+    e.key === "Tab" ||
+    e.key === " "
+  ) {
     e.preventDefault();
-    const value = recipientsInput.value.replace(",", "").trim();
-    if (value) {
-      addRecipientBadge(value);
-      recipientsInput.value = "";
-    }
+    commitRecipientsFromInput();
   }
   // Backspace on empty input removes last badge.
   if (e.key === "Backspace" && recipientsInput.value === "") {
@@ -110,6 +129,20 @@ recipientsInput.addEventListener("keydown", (e) => {
       updateUI();
     }
   }
+});
+
+// On touch devices there is no Tab key, so commit pending input when focus leaves the field.
+recipientsInput.addEventListener("blur", () => {
+  commitRecipientsFromInput();
+});
+
+// Pasting multiple recipients should create badges in one go.
+recipientsInput.addEventListener("paste", () => {
+  setTimeout(() => {
+    if (/[\s,;]/.test(recipientsInput.value)) {
+      commitRecipientsFromInput();
+    }
+  }, 0);
 });
 
 // --- File handling ---

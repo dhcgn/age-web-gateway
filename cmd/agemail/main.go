@@ -122,7 +122,7 @@ func main() {
 	})
 
 	// Wrap everything with security headers.
-	handler := api.CSPMiddleware(api.CORSMiddleware(mux))
+	handler := api.CSPMiddleware(api.CORSMiddleware(cfg.CORSAllowedOrigins)(mux))
 
 	server := &http.Server{
 		Addr:         cfg.ListenAddr,
