@@ -50,12 +50,14 @@ header h1 {
   font-size: 0.9rem;
 }
 
-.subtitle a {
+.subtitle a,
+.setup-section a {
   color: var(--primary);
   text-decoration: none;
 }
 
-.subtitle a:hover {
+.subtitle a:hover,
+.setup-section a:hover {
   text-decoration: underline;
 }
 
@@ -116,6 +118,15 @@ header h1 {
 .copy-url-link:hover {
   color: var(--accent);
   text-decoration: underline;
+}
+
+.copy-url-link.disabled,
+.copy-url-link.disabled:hover {
+  color: var(--text-muted);
+  opacity: 0.35;
+  pointer-events: none;
+  cursor: not-allowed;
+  text-decoration: none;
 }
 
 /* Recipients */

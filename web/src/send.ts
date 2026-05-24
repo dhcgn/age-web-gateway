@@ -11,7 +11,13 @@ function uint8ToBase64(bytes: Uint8Array): string {
 }
 
 export type SendProgress =
-  | { stage: "pow"; hashesChecked?: number }
+  | {
+      stage: "pow";
+      difficulty: number;
+      hashesChecked: number;
+      expectedHashes: number;
+      completionProbability: number;
+    }
   | { stage: "encrypting"; current: number; total: number }
   | { stage: "uploading" }
   | { stage: "done" }
@@ -51,10 +57,26 @@ export async function sendMessage(
   }
 
   // 3. Solve PoW.
-  if (onProgress) onProgress({ stage: "pow" });
   const difficulty = getSendDifficulty();
-  const powToken = await solvePoW(difficulty, (h) => {
-    if (onProgress) onProgress({ stage: "pow", hashesChecked: h });
+  if (onProgress) {
+    onProgress({
+      stage: "pow",
+      difficulty,
+      hashesChecked: 0,
+      expectedHashes: Math.pow(2, Math.max(0, difficulty)),
+      completionProbability: 0,
+    });
+  }
+  const powToken = await solvePoW(difficulty, (powProgress) => {
+    if (onProgress) {
+      onProgress({
+        stage: "pow",
+        difficulty: powProgress.difficulty,
+        hashesChecked: powProgress.hashesChecked,
+        expectedHashes: powProgress.expectedHashes,
+        completionProbability: powProgress.completionProbability,
+      });
+    }
   });
 
   // 4. POST to /api/send.

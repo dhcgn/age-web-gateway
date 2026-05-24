@@ -41,18 +41,16 @@ func main() {
 	slog.SetDefault(logger)
 
 	version := resolvedVersion()
-	powFactorMailSend := cfg.PoWDifficultyFactorMailSend
-	if powFactorMailSend < 1 {
-		powFactorMailSend = 1
+	powDifficultyMailSend := cfg.PoWDifficultyMailSend
+	if powDifficultyMailSend < 1 {
+		powDifficultyMailSend = 20
 	}
-	powDifficultySend := cfg.PoWDifficulty * powFactorMailSend
 	slog.Debug("configuration loaded",
 		"config_file", *configPath,
 		"version", version,
 		"listen_addr", cfg.ListenAddr,
 		"pow_difficulty", cfg.PoWDifficulty,
-		"pow_difficulty_factor_mail_send", powFactorMailSend,
-		"pow_difficulty_send", powDifficultySend,
+		"pow_difficulty_mail_send", powDifficultyMailSend,
 		"pow_validity_s", cfg.PoWValiditySeconds,
 		"smtp_host", cfg.SMTPHost,
 		"smtp_port", cfg.SMTPPort,
@@ -97,7 +95,7 @@ func main() {
 	lookupHandler := &api.LookupHandler{LookupService: lookupSvc}
 	sendHandler := &api.SendHandler{LookupService: lookupSvc, MailService: mailSvc, From: mailFrom}
 	powLookupMiddleware := api.PoWMiddleware(cfg.PoWDifficulty, cfg.PoWValiditySeconds, cache)
-	powSendMiddleware := api.PoWMiddleware(powDifficultySend, cfg.PoWValiditySeconds, cache)
+	powSendMiddleware := api.PoWMiddleware(powDifficultyMailSend, cfg.PoWValiditySeconds, cache)
 
 	mux := http.NewServeMux()
 
@@ -116,7 +114,7 @@ func main() {
 		slog.Error("failed to open embedded web/dist", "error", err)
 		os.Exit(1)
 	}
-	indexHTML := injectRuntimeValues(distFS, cfg.PoWDifficulty, powDifficultySend, version)
+	indexHTML := injectRuntimeValues(distFS, cfg.PoWDifficulty, powDifficultyMailSend, version)
 	staticHandler := http.FileServer(http.FS(distFS))
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -144,8 +142,7 @@ func main() {
 		"version", version,
 		"addr", cfg.ListenAddr,
 		"pow_difficulty", cfg.PoWDifficulty,
-		"pow_difficulty_factor_mail_send", powFactorMailSend,
-		"pow_difficulty_send", powDifficultySend,
+		"pow_difficulty_mail_send", powDifficultyMailSend,
 		"pow_validity_s", cfg.PoWValiditySeconds,
 	)
 	if err := server.ListenAndServe(); err != nil {

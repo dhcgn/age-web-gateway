@@ -13,6 +13,14 @@ import { solvePoW, getDifficulty } from "./pow";
 import { sendMessage, SendProgress } from "./send";
 import { applyDeepLink } from "./deeplink";
 
+const POW_PROGRESS_START = 15;
+const POW_PROGRESS_END = 78;
+
+function powBarPercent(completionProbability: number): number {
+  const clamped = Math.max(0, Math.min(0.99, completionProbability));
+  return POW_PROGRESS_START + clamped * (POW_PROGRESS_END - POW_PROGRESS_START);
+}
+
 // --- DOM elements ---
 const recipientsInput = document.getElementById("recipients-input") as HTMLInputElement;
 const recipientsList = document.getElementById("recipients-list") as HTMLDivElement;
@@ -41,12 +49,35 @@ const debugPowResult = document.getElementById("debug-pow-result") as HTMLPreEle
 const pendingAddresses = new Set<string>();
 const files: File[] = [];
 
-function commitRecipientsFromInput(): void {
-  const raw = recipientsInput.value;
-  const addresses = raw
+function parseRecipientTokens(raw: string): string[] {
+  return raw
     .split(/[\s,;]+/)
     .map((s) => s.trim())
     .filter(Boolean);
+}
+
+function getLinkRecipients(): string[] {
+  const values = new Set<string>(pendingAddresses);
+  for (const token of parseRecipientTokens(recipientsInput.value)) {
+    values.add(token);
+  }
+  return Array.from(values);
+}
+
+function setCopyUrlLinkEnabled(enabled: boolean): void {
+  copyUrlLink.hidden = false;
+  copyUrlLink.classList.toggle("disabled", !enabled);
+  copyUrlLink.setAttribute("aria-disabled", String(!enabled));
+  copyUrlLink.tabIndex = enabled ? 0 : -1;
+  if (enabled) {
+    copyUrlLink.setAttribute("href", "#");
+  } else {
+    copyUrlLink.removeAttribute("href");
+  }
+}
+
+function commitRecipientsFromInput(): void {
+  const addresses = parseRecipientTokens(recipientsInput.value);
 
   if (addresses.length === 0) {
     return;
@@ -123,9 +154,9 @@ function initDebugSection(): void {
     debugPowResult.textContent = `Running PoW test at difficulty ${difficulty}...`;
 
     try {
-      const token = await solvePoW(difficulty, (count) => {
-        hashesChecked = count;
-        debugPowResult.textContent = `Running PoW test at difficulty ${difficulty}...\nTried ${count.toLocaleString()} hashes.`;
+      const token = await solvePoW(difficulty, (progress) => {
+        hashesChecked = progress.hashesChecked;
+        debugPowResult.textContent = `Running PoW test at difficulty ${difficulty}...\nTried ${hashesChecked.toLocaleString()} hashes.`;
       });
       const elapsedMs = Math.round(performance.now() - started);
       debugPowResult.textContent =
@@ -238,6 +269,11 @@ recipientsInput.addEventListener("paste", () => {
   }, 0);
 });
 
+// Keep helper-link enablement in sync while typing.
+recipientsInput.addEventListener("input", () => {
+  updateUI();
+});
+
 // --- File handling ---
 dropZone.addEventListener("click", () => fileInput.click());
 dropZone.addEventListener("dragover", (e) => {
@@ -308,8 +344,9 @@ function updateUI(): void {
   const hasContent = bodyInput.value.trim().length > 0 || files.length > 0;
   sendBtn.disabled = !(allFound && hasContent);
 
-  // Copy-URL link — show whenever there is at least one pending address.
-  copyUrlLink.hidden = pendingAddresses.size === 0;
+  // Copy-URL link is always visible but only enabled when at least one recipient exists.
+  const hasRecipientsForLink = getLinkRecipients().length > 0;
+  setCopyUrlLinkEnabled(hasRecipientsForLink);
 
   // Trust warning — only show for dns (amber) trust level.
   const worst = getWorstTrust();
@@ -332,15 +369,17 @@ sendBtn.addEventListener("click", async () => {
     await sendMessage(bodyInput.value, files, (p: SendProgress) => {
       switch (p.stage) {
         case "pow":
-          progressBar.style.width = "10%";
-          progressText.textContent = "Solving proof of work…";
+          progressBar.style.width = `${powBarPercent(p.completionProbability)}%`;
+          progressText.textContent =
+            `Solving proof of work (difficulty ${p.difficulty}) - ` +
+            `${p.hashesChecked.toLocaleString()} / ~${Math.round(p.expectedHashes).toLocaleString()} hashes`;
           break;
         case "encrypting":
-          progressBar.style.width = `${10 + (p.current / p.total) * 60}%`;
+          progressBar.style.width = `${(p.current / p.total) * POW_PROGRESS_START}%`;
           progressText.textContent = `Encrypting (${p.current}/${p.total})…`;
           break;
         case "uploading":
-          progressBar.style.width = "80%";
+          progressBar.style.width = "90%";
           progressText.textContent = "Sending…";
           break;
         case "done":
@@ -381,11 +420,19 @@ sendBtn.addEventListener("click", async () => {
 // --- Deep-link ---
 applyDeepLink(recipientsInput, bodyInput, addRecipientBadge);
 initDebugSection();
+updateUI();
 
 // --- Copy URL with recipients ---
 copyUrlLink.addEventListener("click", (e) => {
   e.preventDefault();
-  const to = Array.from(pendingAddresses).join(",");
+  if (copyUrlLink.classList.contains("disabled")) {
+    return;
+  }
+  const recipients = getLinkRecipients();
+  if (recipients.length === 0) {
+    return;
+  }
+  const to = recipients.join(",");
   const url = `${location.origin}${location.pathname}#to=${encodeURIComponent(to)}`;
   navigator.clipboard.writeText(url).then(() => {
     const original = copyUrlLink.textContent;
