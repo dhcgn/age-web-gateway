@@ -27,6 +27,7 @@ const progressBar = document.getElementById("progress-bar") as HTMLDivElement;
 const progressText = document.getElementById("progress-text") as HTMLSpanElement;
 const sendBtn = document.getElementById("send-btn") as HTMLButtonElement;
 const statusDiv = document.getElementById("status") as HTMLDivElement;
+const copyUrlLink = document.getElementById("copy-url-link") as HTMLAnchorElement;
 
 // --- State ---
 const pendingAddresses = new Set<string>();
@@ -181,6 +182,9 @@ function updateUI(): void {
   const hasContent = bodyInput.value.trim().length > 0 || files.length > 0;
   sendBtn.disabled = !(allFound && hasContent);
 
+  // Copy-URL link — show whenever there is at least one pending address.
+  copyUrlLink.hidden = pendingAddresses.size === 0;
+
   // Trust warning — only show for dns (amber) trust level.
   const worst = getWorstTrust();
   if (worst === "dns" && allFound) {
@@ -250,3 +254,15 @@ sendBtn.addEventListener("click", async () => {
 
 // --- Deep-link ---
 applyDeepLink(recipientsInput, bodyInput, addRecipientBadge);
+
+// --- Copy URL with recipients ---
+copyUrlLink.addEventListener("click", (e) => {
+  e.preventDefault();
+  const to = Array.from(pendingAddresses).join(",");
+  const url = `${location.origin}${location.pathname}#to=${encodeURIComponent(to)}`;
+  navigator.clipboard.writeText(url).then(() => {
+    const original = copyUrlLink.textContent;
+    copyUrlLink.textContent = "Copied!";
+    setTimeout(() => { copyUrlLink.textContent = original; }, 1500);
+  });
+});

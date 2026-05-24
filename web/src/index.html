@@ -23,6 +23,7 @@
           <input type="text" id="recipients-input" placeholder="user@domain.de or domain.de" autocomplete="off">
         </div>
         <div id="recipients-error" class="field-error" hidden></div>
+        <a id="copy-url-link" class="copy-url-link" href="#" hidden>Copy link with recipients</a>
       </div>
 
       <!-- Trust warning -->
@@ -65,6 +66,16 @@
     <footer>
       <p>Encryption happens entirely in your browser. The server never sees plaintext.</p>
     </footer>
+
+    <section class="setup-section">
+      <h2>Setup</h2>
+      <p>Publish your age public key via DNS TXT record or HTTPS. See the <a href="https://github.com/dhcgn/age-web-gateway" target="_blank" rel="noopener">GitHub repository</a> for full details.</p>
+      <h3>DNS TXT record</h3>
+      <pre class="code-block">dig +short TXT _age.your-domain.com
+"your-domain.com;dave@your-domain.com;age1a3xsw5j5d27k4zmp5wzr7kp49m7gvgt87f32gq3he7da0r4jne6qyk4mmy"</pre>
+      <h3>HTTPS</h3>
+      <pre class="code-block">https://your-domain.com/.well-known/age</pre>
+    </section>
   </main>
 
   <script type="module" src="app.js"></script>
