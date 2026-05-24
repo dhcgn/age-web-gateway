@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="pow-difficulty" content="4">
+  <title>agemail – Send Encrypted Messages</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>agemail</h1>
+      <p class="subtitle">Send end-to-end encrypted messages via <a href="https://age-encryption.org" target="_blank" rel="noopener">age</a></p>
+    </header>
+
+    <section class="form-section">
+      <!-- Recipients -->
+      <div class="field">
+        <label for="recipients-input">Recipients</label>
+        <div class="recipients-wrapper">
+          <div id="recipients-list" class="recipients-list"></div>
+          <input type="text" id="recipients-input" placeholder="user@domain.de or domain.de" autocomplete="off">
+        </div>
+        <div id="recipients-error" class="field-error" hidden></div>
+      </div>
+
+      <!-- Trust warning -->
+      <div id="trust-warning" class="trust-warning" hidden>
+        <span class="trust-warning-icon">⚠</span>
+        <span id="trust-warning-text"></span>
+      </div>
+
+      <!-- Body -->
+      <div class="field">
+        <label for="body-input">Message</label>
+        <textarea id="body-input" rows="8" placeholder="Type your message here…"></textarea>
+      </div>
+
+      <!-- File attachments -->
+      <div class="field">
+        <label>Attachments</label>
+        <div id="drop-zone" class="drop-zone">
+          <span class="drop-zone-text">Drop files here or click to select</span>
+          <input type="file" id="file-input" multiple hidden>
+        </div>
+        <ul id="file-list" class="file-list"></ul>
+      </div>
+
+      <!-- Progress -->
+      <div id="progress-section" class="progress-section" hidden>
+        <div class="progress-bar-container">
+          <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
+        </div>
+        <span id="progress-text" class="progress-text">Preparing…</span>
+      </div>
+
+      <!-- Send button -->
+      <button id="send-btn" class="send-btn" disabled>Send Encrypted Message</button>
+
+      <!-- Status -->
+      <div id="status" class="status" hidden></div>
+    </section>
+
+    <footer>
+      <p>Encryption happens entirely in your browser. The server never sees plaintext.</p>
+    </footer>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

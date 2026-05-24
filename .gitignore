@@ -1,0 +1,36 @@
+# Go
+/agemail
+/agemail.exe
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+
+# Go workspace
+go.work
+go.work.sum
+
+# Dependencies
+vendor/
+
+# Frontend
+web/node_modules/
+web/dist/
+
+# Config (secrets)
+config.integration.yaml
+config.json
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

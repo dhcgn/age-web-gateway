@@ -1,0 +1,13 @@
+{
+  "listen_addr": ":8080",
+  "smtp_host": "localhost",
+  "smtp_port": 587,
+  "smtp_user": "",
+  "smtp_pass": "",
+  "smtp_from": "noreply@localhost",
+  "pow_difficulty": 4,
+  "pow_validity_seconds": 60,
+  "dns_resolver": "",
+  "wellknown_timeout_seconds": 5,
+  "log_level": "debug"
+}

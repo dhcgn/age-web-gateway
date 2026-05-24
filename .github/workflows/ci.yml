@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: web
+        run: npm ci --ignore-scripts
+
+      - name: Build frontend
+        working-directory: web
+        run: node build.mjs
+
+      - name: Build Go binary
+        run: go build ./cmd/agemail
+
+      - name: Run Go tests
+        run: go test ./internal/...
+
+      - name: Go vet
+        run: go vet ./...

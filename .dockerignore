@@ -1,0 +1,8 @@
+web/node_modules/
+web/dist/
+.git
+.gitignore
+*.md
+config.integration.yaml
+.idea/
+.vscode/

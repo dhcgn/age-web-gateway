@@ -1,0 +1,9 @@
+# Integration test configuration — COPY THIS FILE TO config.integration.yaml
+# This file is gitignored. Tests skip automatically if env vars are absent.
+
+# Set these as environment variables for integration tests:
+#   INTEGRATION_SMTP_HOST=smtp.example.com
+#   INTEGRATION_SMTP_USER=user@example.com
+#   INTEGRATION_SMTP_PASS=secret
+#   INTEGRATION_SMTP_FROM=noreply@example.com
+#   INTEGRATION_SMTP_TO=test@example.com
