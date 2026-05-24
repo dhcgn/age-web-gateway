@@ -33,7 +33,7 @@ Be clear about limits: malicious browser extensions, compromised endpoints, or m
 
 ## Screenshot
 
-![age-web-gateway UI](_assets/screenshot-age-web.png)
+<img src="_assets/screenshot-age-web.png" alt="age-web-gateway UI" />
 
 ## How users interact
 
