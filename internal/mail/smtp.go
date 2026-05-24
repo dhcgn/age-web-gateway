@@ -16,8 +16,18 @@ type Service struct {
 	From string
 }
 
-// Send relays a pre-assembled MIME message to a single recipient.
-func (s *Service) Send(to string, msg []byte) error {
+// Send assembles a MIME message from p and relays it via SMTP.
+// It implements the Sender interface.
+func (s *Service) Send(p Payload) error {
+	msg, err := AssembleMIME(s.From, p.To, p.Message, p.Attachments)
+	if err != nil {
+		return fmt.Errorf("mime assembly: %w", err)
+	}
+	return s.sendRaw(p.To, msg)
+}
+
+// sendRaw relays a pre-assembled MIME message to a single recipient over SMTP.
+func (s *Service) sendRaw(to string, msg []byte) error {
 	addr := net.JoinHostPort(s.Host, fmt.Sprintf("%d", s.Port))
 
 	c, err := smtp.Dial(addr)

@@ -87,7 +87,7 @@ This section is deliberately blunt; it defines what the system does and does
 | Component | Tech | Responsibility |
 |---|---|---|
 | **Frontend** | Static HTML/CSS + TypeScript, [typage](https://github.com/FiloSottile/typage) (`age-encryption`) | UI, key lookup calls, age encryption, PoW computation. Served as static assets embedded in the binary. |
-| **Backend API** | Go (net/http) | Key discovery (DNS + HTTPS well-known), PoW verification, SMTP relay, static asset serving. |
+| **Backend API** | Go (net/http) | Key discovery (DNS + HTTPS well-known), PoW verification, mail relay (SMTP or Cloudflare Email API), static asset serving. |
 | **Packaging** | `embed.FS` + Docker | One binary embeds the built frontend; one image runs it. |
 
 There is intentionally **no database**. The only state is an in-memory,
@@ -308,15 +308,20 @@ debugging/testing** (even 0–4 bits) and higher in production.
 1. Serve embedded static frontend.
 2. `/api/lookup` — DNS TXT (with DNSSEC validation when available) + HTTPS
    well-known fetch; report trust level.
-3. `/api/send` — assemble a standard **`multipart/mixed`** MIME message and relay
-   via configured SMTP. For each addressed identity the backend re-resolves the
-   record (§4.3) to obtain the **delivery mailbox** (RCPT TO), falling back to the
-   domain catch-all for unlisted users. The server owns the envelope and headers
-   (From, Date, Message-ID, optional **DKIM** signing). Attachments are the opaque
-   `.age` blobs named as in §5.
-   - Subject: e.g. "You have received an encrypted message".
-   - Body (plaintext): short notice + optionally the recipient's public key
-     fingerprint that was used.
+3. `/api/send` — for each addressed identity, re-resolve the record (§4.3) to
+   obtain the **delivery mailbox**, then deliver via the configured **mail
+   backend** (selected by `MAIL_BACKEND`):
+   - **`smtp`** (default): assemble a `multipart/mixed` MIME message and relay
+     via STARTTLS SMTP. The server owns the envelope headers (From, Date,
+     Message-ID, optional **DKIM** signing).
+   - **`cloudflare`**: POST a JSON payload to the
+     [Cloudflare Email REST API](https://developers.cloudflare.com/email-service/api/send-emails/rest-api/).
+     `message.age` and each attachment pair are sent as base64-encoded
+     `attachments` entries; no local MIME assembly is required.
+
+   In both cases the `.age` blobs are **opaque** to the backend — it never
+   parses ciphertext. Subject: "You have received an encrypted message".
+   Body (plaintext): short notice about age decryption.
 4. `/healthz` — liveness/readiness. (The trailing `z` is just the Google/
    Kubernetes z-pages convention to avoid clashing with app routes; `/health`
    works identically — rename if preferred.)
@@ -325,12 +330,14 @@ debugging/testing** (even 0–4 bits) and higher in production.
 | Key | Purpose |
 |---|---|
 | `LISTEN_ADDR` | e.g. `:8080` |
-| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `SMTP_FROM` | relay config |
+| `MAIL_BACKEND` | `smtp` (default) or `cloudflare` — selects the delivery backend |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `SMTP_FROM` | SMTP relay config (used when `MAIL_BACKEND=smtp`) |
+| `CF_ACCOUNT_ID` / `CF_API_TOKEN` / `CF_FROM` | Cloudflare Email API credentials (used when `MAIL_BACKEND=cloudflare`) |
 | `POW_DIFFICULTY` | leading zero bits |
 | `POW_VALIDITY_SECONDS` | default 60 |
 | `DNS_RESOLVER` | optional validating resolver for DNSSEC |
 | `WELLKNOWN_TIMEOUT` | HTTPS lookup timeout |
-| `DKIM_*` | optional signing key/selector/domain |
+| `DKIM_*` | optional signing key/selector/domain (SMTP only) |
 
 TLS is expected to terminate at a **reverse proxy** (caddy/nginx/traefik);
 built-in TLS optional later. (OQ-5)
@@ -355,7 +362,7 @@ built-in TLS optional later. (OQ-5)
 /cmd/agemail/            main.go (wires everything, embed.FS)
 /internal/lookup/        DNS TXT + DNSSEC + well-known discovery, trust levels
 /internal/pow/           verification + replay cache
-/internal/mail/          MIME assembly, SMTP relay, optional DKIM
+/internal/mail/          MIME assembly, Sender interface, SMTP relay, Cloudflare Email API, optional DKIM
 /internal/api/           HTTP handlers (/api/lookup, /api/send, /healthz)
 /web/                    TypeScript client (typage), built into /web/dist
 /web/dist/               embedded static output

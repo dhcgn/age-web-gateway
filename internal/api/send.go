@@ -14,7 +14,8 @@ import (
 // SendHandler handles POST /api/send.
 type SendHandler struct {
 	LookupService *lookup.Service
-	MailService   *mail.Service
+	MailService   mail.Sender
+	From          string // sender address used in the From header
 }
 
 // sendRequest is the JSON body of POST /api/send.
@@ -88,14 +89,13 @@ func (h *SendHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		msg, err := mail.AssembleMIME(h.MailService.From, delivery, messageBytes, attachments)
-		if err != nil {
-			errors = append(errors, fmt.Sprintf("recipient %s: MIME assembly failed: %v", recipient, err))
-			continue
-		}
-
-		if err := h.MailService.Send(delivery, msg); err != nil {
-			slog.Error("SMTP send failed", "recipient", delivery, "error", err)
+		if err := h.MailService.Send(mail.Payload{
+			From:        h.From,
+			To:          delivery,
+			Message:     messageBytes,
+			Attachments: attachments,
+		}); err != nil {
+			slog.Error("mail send failed", "recipient", delivery, "error", err)
 			errors = append(errors, fmt.Sprintf("recipient %s: send failed", recipient))
 			continue
 		}

@@ -27,6 +27,14 @@ type Config struct {
 
 	LogLevel string `json:"log_level"` // "debug", "info", "warn", "error"
 
+	// Mail backend: "smtp" (default) or "cloudflare".
+	MailBackend string `json:"mail_backend"`
+
+	// Cloudflare Email API — used when MailBackend == "cloudflare".
+	CFAccountID string `json:"cf_account_id"`
+	CFAPIToken  string `json:"cf_api_token"`
+	CFFrom      string `json:"cf_from"`
+
 	WellknownTimeout time.Duration `json:"-"`
 }
 
@@ -53,6 +61,7 @@ func defaults() Config {
 		SMTPHost:                "localhost",
 		SMTPPort:                587,
 		SMTPFrom:                "noreply@localhost",
+		MailBackend:             "smtp",
 		PoWDifficulty:           4,
 		PoWValiditySeconds:      60,
 		WellknownTimeoutSeconds: 5,
@@ -101,6 +110,18 @@ func (c *Config) applyEnv() {
 	}
 	if v := os.Getenv("LOG_LEVEL"); v != "" {
 		c.LogLevel = v
+	}
+	if v := os.Getenv("MAIL_BACKEND"); v != "" {
+		c.MailBackend = v
+	}
+	if v := os.Getenv("CF_ACCOUNT_ID"); v != "" {
+		c.CFAccountID = v
+	}
+	if v := os.Getenv("CF_API_TOKEN"); v != "" {
+		c.CFAPIToken = v
+	}
+	if v := os.Getenv("CF_FROM"); v != "" {
+		c.CFFrom = v
 	}
 }
 

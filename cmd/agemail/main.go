@@ -54,17 +54,33 @@ func main() {
 		DNSResolver:      cfg.DNSResolver,
 		WellknownTimeout: cfg.WellknownTimeout,
 	}
-	mailSvc := &mail.Service{
-		Host: cfg.SMTPHost,
-		Port: cfg.SMTPPort,
-		User: cfg.SMTPUser,
-		Pass: cfg.SMTPPass,
-		From: cfg.SMTPFrom,
+
+	var mailSvc mail.Sender
+	var mailFrom string
+	switch cfg.MailBackend {
+	case "cloudflare":
+		mailSvc = &mail.CloudflareService{
+			AccountID: cfg.CFAccountID,
+			APIToken:  cfg.CFAPIToken,
+			FromAddr:  cfg.CFFrom,
+		}
+		mailFrom = cfg.CFFrom
+		slog.Info("mail backend: cloudflare", "account_id", cfg.CFAccountID, "from", cfg.CFFrom)
+	default:
+		mailSvc = &mail.Service{
+			Host: cfg.SMTPHost,
+			Port: cfg.SMTPPort,
+			User: cfg.SMTPUser,
+			Pass: cfg.SMTPPass,
+			From: cfg.SMTPFrom,
+		}
+		mailFrom = cfg.SMTPFrom
+		slog.Info("mail backend: smtp", "host", cfg.SMTPHost, "port", cfg.SMTPPort, "from", cfg.SMTPFrom)
 	}
 
 	// API handlers.
 	lookupHandler := &api.LookupHandler{LookupService: lookupSvc}
-	sendHandler := &api.SendHandler{LookupService: lookupSvc, MailService: mailSvc}
+	sendHandler := &api.SendHandler{LookupService: lookupSvc, MailService: mailSvc, From: mailFrom}
 	powMiddleware := api.PoWMiddleware(cfg.PoWDifficulty, cfg.PoWValiditySeconds, cache)
 
 	mux := http.NewServeMux()
