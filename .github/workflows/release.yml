@@ -38,7 +38,7 @@ jobs:
       - name: Build binaries
         run: |
           VERSION="${GITHUB_REF#refs/tags/}"
-          LDFLAGS="-s -w -X main.version=${VERSION}"
+          LDFLAGS="-s -w -X main.buildVersion=${VERSION}"
           mkdir -p dist
 
           # Linux amd64
@@ -99,5 +99,7 @@ jobs:
           context: .
           file: deploy/Dockerfile
           push: true
+          build-args: |
+            VERSION=${{ github.ref_name }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

@@ -11,11 +11,12 @@ RUN node build.mjs
 # Stage 2: Build Go binary
 FROM golang:1.26-alpine AS backend
 WORKDIR /app
+ARG VERSION=dev
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 COPY --from=frontend /app/web/dist ./web/dist
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /agemail ./cmd/agemail
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w -X main.buildVersion=${VERSION}" -o /agemail ./cmd/agemail
 
 # Stage 3: Minimal runtime
 FROM gcr.io/distroless/static:nonroot
