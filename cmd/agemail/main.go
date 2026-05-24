@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
@@ -18,6 +19,10 @@ import (
 	"github.com/dhcgn/age-web-gateway/internal/pow"
 	"github.com/dhcgn/age-web-gateway/web"
 )
+
+// buildVersion can be overridden at build time:
+//   go build -ldflags "-X main.buildVersion=v0.0.5"
+var buildVersion = "dev"
 
 func main() {
 	configPath := flag.String("config", "", "path to JSON config file (optional, env vars override)")
@@ -34,8 +39,10 @@ func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel}))
 	slog.SetDefault(logger)
 
+	version := resolvedVersion()
 	slog.Debug("configuration loaded",
 		"config_file", *configPath,
+		"version", version,
 		"listen_addr", cfg.ListenAddr,
 		"pow_difficulty", cfg.PoWDifficulty,
 		"pow_validity_s", cfg.PoWValiditySeconds,
@@ -100,7 +107,7 @@ func main() {
 		slog.Error("failed to open embedded web/dist", "error", err)
 		os.Exit(1)
 	}
-	indexHTML := injectPowDifficulty(distFS, cfg.PoWDifficulty)
+	indexHTML := injectRuntimeValues(distFS, cfg.PoWDifficulty, version)
 	staticHandler := http.FileServer(http.FS(distFS))
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -125,6 +132,7 @@ func main() {
 	}
 
 	slog.Info("agemail starting",
+		"version", version,
 		"addr", cfg.ListenAddr,
 		"pow_difficulty", cfg.PoWDifficulty,
 		"pow_validity_s", cfg.PoWValiditySeconds,
@@ -135,21 +143,34 @@ func main() {
 	}
 }
 
-// injectPowDifficulty reads index.html from the embedded FS and replaces
-// the pow-difficulty meta tag content with the configured value.
-func injectPowDifficulty(distFS fs.FS, difficulty int) []byte {
+// injectRuntimeValues reads index.html from the embedded FS and injects
+// runtime placeholders for PoW difficulty and app version.
+func injectRuntimeValues(distFS fs.FS, difficulty int, version string) []byte {
 	data, err := fs.ReadFile(distFS, "index.html")
 	if err != nil {
-		slog.Warn("could not read index.html for PoW injection", "error", err)
+		slog.Warn("could not read index.html for runtime injection", "error", err)
 		return []byte(fmt.Sprintf(`<!DOCTYPE html><html><body>agemail — index.html not found (%v)</body></html>`, err))
 	}
 	html := string(data)
-	html = strings.Replace(html,
-		`content="4"`,
-		`content="`+strconv.Itoa(difficulty)+`"`,
-		1)
-	slog.Debug("index.html PoW difficulty injected", "difficulty", difficulty)
+	html = strings.ReplaceAll(html, "__POW_DIFFICULTY__", strconv.Itoa(difficulty))
+	html = strings.ReplaceAll(html, "__APP_VERSION__", version)
+	slog.Debug("index.html runtime values injected", "difficulty", difficulty, "version", version)
 	return []byte(html)
+}
+
+func resolvedVersion() string {
+	if buildVersion != "" && buildVersion != "dev" {
+		return buildVersion
+	}
+	if bi, ok := debug.ReadBuildInfo(); ok {
+		if bi.Main.Version != "" && bi.Main.Version != "(devel)" {
+			return bi.Main.Version
+		}
+	}
+	if buildVersion != "" {
+		return buildVersion
+	}
+	return "dev"
 }
 
 func parseLogLevel(level string) slog.Level {

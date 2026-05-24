@@ -325,6 +325,9 @@ debugging/testing** (even 0–4 bits) and higher in production.
 4. `/healthz` — liveness/readiness. (The trailing `z` is just the Google/
    Kubernetes z-pages convention to avoid clashing with app routes; `/health`
    works identically — rename if preferred.)
+5. Expose the running app version in observability surfaces:
+   - startup logs include a `version` field,
+   - the web UI footer displays the same version string (injected at serve time).
 
 ### Configuration (env vars; file optional)
 | Key | Purpose |
