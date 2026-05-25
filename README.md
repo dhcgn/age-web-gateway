@@ -16,7 +16,10 @@ Try it live: https://age.hdev.io/
 
 ## Motivation
 
-Email is everywhere, but plaintext email is not private.
+Sometime you want to offer a simple way for users to send encrypted messages to a recipient without requiring them to have their own email address or encryption keys. This project provides a web interface where users can enter a recipient address and send encrypted content without needing to manage their own keys or email accounts.
+
+> The recipient most only needs to publish their age public key.
+
 This project makes encrypted sending simple for normal users:
 - Major use case: someone wants to receive information by mail and publish only an age public key, without forcing senders to disclose their own mail address.
 - Senders just open the webpage, enter an email-like recipient address, and send encrypted content.
