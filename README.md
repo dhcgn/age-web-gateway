@@ -140,3 +140,11 @@ age1ql3z7hjy54pw3hyww5ayyfg7zqgvc7w3j2elw8zmrj2kg5sfn9aqmcac8p
 
 - This project sends encrypted messages; it is not a mailbox service.
 - Metadata like recipient address and message timing are still visible to mail infrastructure.
+
+## Easy workflow with automatic decryption
+
+For incoming mails with age-encrypted attachments, you can use
+[age-imap-decryptor](https://github.com/dhcgn/age-imap-decryptor) to decrypt them
+automatically after delivery. Together with this project, that enables a simple
+end-to-end workflow: encrypt in the browser on send, then decrypt attachments
+automatically in the recipient mailbox pipeline.
