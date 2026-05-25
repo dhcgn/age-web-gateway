@@ -16,6 +16,12 @@ go build ./cmd/agemail
 ```
 Version injection: `go build -ldflags "-X main.buildVersion=v1.2.3" ./cmd/agemail`
 
+### Release
+```bash
+git tag v0.0.8 && git push origin v0.0.8
+```
+Pushing a `v*` tag triggers the release workflow.
+
 ### Tests
 ```bash
 go test ./internal/...                           # all unit tests
