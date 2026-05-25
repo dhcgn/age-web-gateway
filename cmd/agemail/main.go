@@ -114,7 +114,7 @@ func main() {
 		slog.Error("failed to open embedded web/dist", "error", err)
 		os.Exit(1)
 	}
-	
+
 	// Determine max message size in MB based on mail backend
 	var maxSizeMB int
 	if cfg.MailBackend == "cloudflare" {
@@ -122,7 +122,7 @@ func main() {
 	} else {
 		maxSizeMB = 25
 	}
-	
+
 	indexHTML := injectRuntimeValues(distFS, cfg.PoWDifficulty, powDifficultyMailSend, version, maxSizeMB)
 	staticHandler := http.FileServer(http.FS(distFS))
 
