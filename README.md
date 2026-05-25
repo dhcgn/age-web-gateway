@@ -7,6 +7,8 @@
 [![GitHub Release](https://img.shields.io/github/v/release/dhcgn/age-web-gateway)](https://github.com/dhcgn/age-web-gateway/releases)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fage.hdev.io%2F&label=Website)](https://age.hdev.io/)
 [![GHCR](https://img.shields.io/badge/GHCR-ghcr.io%2Fdhcgn%2Fage--web--gateway-2ea44f?logo=github)](https://github.com/dhcgn/age-web-gateway/pkgs/container/age-web-gateway)
+![GitHub License](https://img.shields.io/github/license/dhcgn/age-web-gateway)
+
 
 A self-hostable web gateway to send age-encrypted messages and files.
 

@@ -23,11 +23,20 @@ type Record struct {
 
 // Result is the response returned by a lookup.
 type Result struct {
-	Recipient string     `json:"recipient"`
-	Found     bool       `json:"found"`
-	Trust     TrustLevel `json:"trust,omitempty"`
-	Keys      []string   `json:"recipients,omitempty"` // JSON field = "recipients" per §4.4
-	Delivery  string     `json:"-"`                    // not exposed to client
+	Recipient       string     `json:"recipient"`
+	Found           bool       `json:"found"`
+	Trust           TrustLevel `json:"trust,omitempty"`
+	Keys            []string   `json:"recipients,omitempty"` // JSON field = "recipients" per §4.4
+	SelectedKey     string     `json:"selected_key,omitempty"`
+	SelectionReason string     `json:"selection_reason,omitempty"` // "single", "pq-preferred", "pq-unavailable"
+	Delivery        string     `json:"delivery,omitempty"`
+	Warnings        []string   `json:"warnings,omitempty"`
+}
+
+// ParseFailure describes a record line that could not be parsed.
+type ParseFailure struct {
+	Line string // raw input line
+	Err  error
 }
 
 // ParseRecord parses a single semicolon-separated line into a Record.
@@ -64,9 +73,18 @@ func ParseRecord(line string) (Record, error) {
 	}, nil
 }
 
-// ParseRecords parses multiple lines (e.g. from a well-known file).
+// ParseRecords parses multiple lines (e.g. from a well-known file), discarding
+// parse failures. Use ParseRecordsAndFailures when you need to surface them.
 func ParseRecords(body string) []Record {
+	records, _ := ParseRecordsAndFailures(body)
+	return records
+}
+
+// ParseRecordsAndFailures parses multiple lines and returns both the valid
+// records and a list of parse failures (with the raw offending line).
+func ParseRecordsAndFailures(body string) ([]Record, []ParseFailure) {
 	var records []Record
+	var failures []ParseFailure
 	for _, line := range strings.Split(body, "\n") {
 		line = strings.TrimSpace(line)
 		if line == "" || strings.HasPrefix(line, "#") {
@@ -74,11 +92,12 @@ func ParseRecords(body string) []Record {
 		}
 		rec, err := ParseRecord(line)
 		if err != nil {
+			failures = append(failures, ParseFailure{Line: line, Err: err})
 			continue
 		}
 		records = append(records, rec)
 	}
-	return records
+	return records, failures
 }
 
 // DomainOf extracts the domain from a recipient string.

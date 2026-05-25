@@ -6,15 +6,27 @@
   <meta name="pow-difficulty" content="__POW_DIFFICULTY__">
   <meta name="pow-difficulty-send" content="__POW_DIFFICULTY_SEND__">
   <meta name="app-version" content="__APP_VERSION__">
-  <title>agemail – Send Encrypted Messages</title>
+  <title>age-mail - Send Encrypted Messages</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <main class="container">
     <header>
-      <h1>agemail</h1>
-      <p class="subtitle">Send end-to-end encrypted messages via <a href="https://age-encryption.org" target="_blank" rel="noopener">age</a></p>
+      <h1>age-mail</h1>
+      <p class="subtitle">Send end-to-end encrypted messages via <a href="https://age-encryption.org" target="_blank" rel="noopener">age</a>.<br> More about this project <a href="https://github.com/dhcgn/age-web-gateway/blob/main/README.md" target="_blank" rel="noopener">github.com/dhcgn/age-web-gateway</a></p>
     </header>
+
+    <!-- Privacy notice (dismissal persisted in localStorage, re-shown after 30 days) -->
+    <aside id="privacy-notice" class="privacy-notice" hidden>
+      <button id="privacy-notice-dismiss" class="privacy-notice-dismiss" type="button" aria-label="Dismiss">×</button>
+      <h2>Before you send</h2>
+      <ul>
+        <li>The <strong>recipient's email address is visible</strong> to the operator of this server. Address lookup and delivery require it.</li>
+        <li>The <strong>message content and your identity as sender are not visible</strong> to the operator. Encryption happens in your browser; the server only relays ciphertext.</li>
+        <li>This means the operator can see <em>who</em> you send to, but not <em>what</em> you send or who <em>you</em> are. Choose a server you are comfortable telling that to.</li>
+        <li><strong>The operator should only be trusted to a limited extent</strong> — they cannot read your message, but they could log recipient addresses, observe traffic patterns, or be compelled to do so. Don't pick a server you would not pick to handle the metadata about your conversations.</li>
+      </ul>
+    </aside>
 
     <section class="form-section">
       <!-- Recipients -->
@@ -26,12 +38,27 @@
         </div>
         <div id="recipients-error" class="field-error" hidden></div>
         <a id="copy-url-link" class="copy-url-link" href="#" hidden>Copy link with recipients</a>
+        <div id="recent-recipients" class="recent-recipients" hidden>
+          <span class="recent-recipients-label">Recent:</span>
+          <div id="recent-recipients-list" class="recent-recipients-list"></div>
+          <button id="recent-recipients-clear" class="recent-clear-btn" type="button" title="Remove all recent recipients">clear all</button>
+        </div>
       </div>
 
       <!-- Trust warning -->
       <div id="trust-warning" class="trust-warning" hidden>
         <span class="trust-warning-icon">⚠</span>
         <span id="trust-warning-text"></span>
+      </div>
+
+      <!-- Subject (optional, NOT encrypted) -->
+      <div class="field">
+        <label for="subject-input">Subject <span class="field-label-note">(optional, not encrypted)</span></label>
+        <input type="text" id="subject-input" placeholder="Leave empty for default" autocomplete="off">
+        <div id="subject-warning" class="subject-warning">
+          <span aria-hidden="true">⚠</span>
+          This field is not encrypted. Anyone with access to this email can read it. Do not put sensitive information here.
+        </div>
       </div>
 
       <!-- Body -->
@@ -48,6 +75,10 @@
           <input type="file" id="file-input" multiple hidden>
         </div>
         <ul id="file-list" class="file-list"></ul>
+        <div id="size-warning" class="size-warning" hidden>
+          <span aria-hidden="true">⚠</span>
+          <span id="size-warning-text"></span>
+        </div>
       </div>
 
       <!-- Progress -->
@@ -67,6 +98,7 @@
 
     <footer>
       <p>Encryption happens entirely in your browser. The server never sees plaintext.</p>
+      <p><a href="https://github.com/dhcgn/age-web-gateway/blob/main/README.md" target="_blank" rel="noopener">More about this project</a></p>
       <p class="app-version">Version: __APP_VERSION__</p>
     </footer>
 

@@ -1,16 +1,25 @@
 import { solvePoW, getDifficulty } from "./pow";
 
+export type SelectionReason = "single" | "pq-preferred" | "pq-unavailable";
+
 export interface LookupResult {
   recipient: string;
   found: boolean;
   trust?: "https" | "dnssec" | "dns";
   recipients?: string[];
+  selected_key?: string;
+  selection_reason?: SelectionReason;
+  delivery?: string;
+  warnings?: string[];
 }
 
 export interface ResolvedRecipient {
   address: string;
   trust: "https" | "dnssec" | "dns";
-  keys: string[];
+  selectedKey: string;
+  selectionReason: SelectionReason;
+  delivery: string;
+  warnings: string[];
 }
 
 const resolved = new Map<string, ResolvedRecipient>();
@@ -18,16 +27,6 @@ let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
 export function getResolvedRecipients(): ResolvedRecipient[] {
   return Array.from(resolved.values());
-}
-
-export function getAllKeys(): string[] {
-  const keys = new Set<string>();
-  for (const r of resolved.values()) {
-    for (const k of r.keys) {
-      keys.add(k);
-    }
-  }
-  return Array.from(keys);
 }
 
 export function getWorstTrust(): "https" | "dnssec" | "dns" | null {
@@ -56,6 +55,10 @@ export function clearRecipients(): void {
   resolved.clear();
 }
 
+export function isPQKey(key: string): boolean {
+  return key.startsWith("age1pq1");
+}
+
 type UpdateCallback = () => void;
 let onUpdate: UpdateCallback = () => {};
 
@@ -63,9 +66,11 @@ export function setUpdateCallback(cb: UpdateCallback): void {
   onUpdate = cb;
 }
 
+export type LookupStatus = "loading" | "found" | "notfound" | "error";
+
 export async function lookupRecipient(
   address: string,
-  setStatus?: (status: "loading" | "found" | "notfound" | "error") => void
+  setStatus?: (status: LookupStatus, warnings?: string[]) => void
 ): Promise<void> {
   address = address.trim();
   if (!address) return;
@@ -89,17 +94,21 @@ export async function lookupRecipient(
     }
 
     const data: LookupResult = await resp.json();
+    const warnings = Array.isArray(data.warnings) ? data.warnings : [];
 
-    if (data.found && data.trust && data.recipients && data.recipients.length > 0) {
+    if (data.found && data.trust && data.selected_key) {
       resolved.set(address, {
         address,
         trust: data.trust,
-        keys: data.recipients,
+        selectedKey: data.selected_key,
+        selectionReason: data.selection_reason ?? "single",
+        delivery: data.delivery ?? "",
+        warnings,
       });
-      if (setStatus) setStatus("found");
+      if (setStatus) setStatus("found", warnings);
     } else {
       resolved.delete(address);
-      if (setStatus) setStatus("notfound");
+      if (setStatus) setStatus("notfound", warnings);
     }
   } catch {
     resolved.delete(address);

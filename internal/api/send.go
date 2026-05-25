@@ -21,7 +21,8 @@ type SendHandler struct {
 // sendRequest is the JSON body of POST /api/send.
 type sendRequest struct {
 	Recipients  []string             `json:"recipients"`
-	Message     string               `json:"message"` // base64-encoded message.age
+	Subject     string               `json:"subject,omitempty"` // optional, plaintext
+	Message     string               `json:"message"`           // base64-encoded message.age
 	Attachments []sendAttachmentJSON `json:"attachments"`
 }
 
@@ -92,6 +93,7 @@ func (h *SendHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if err := h.MailService.Send(mail.Payload{
 			From:        h.From,
 			To:          delivery,
+			Subject:     req.Subject,
 			Message:     messageBytes,
 			Attachments: attachments,
 		}); err != nil {
