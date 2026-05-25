@@ -50,6 +50,13 @@ header h1 {
   font-size: 0.9rem;
 }
 
+.subheading {
+  color: var(--text);
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
 .subtitle a,
 .setup-section a {
   color: var(--primary);
@@ -113,6 +120,21 @@ header h1 {
   color: var(--text-muted);
   font-size: 0.78rem;
   margin-left: 0.35rem;
+}
+
+.field-hint {
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.send-hint {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+  text-align: center;
 }
 
 .subject-warning {

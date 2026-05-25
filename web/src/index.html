@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,11 +10,13 @@
   <title>age-mail - Send Encrypted Messages</title>
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
   <main class="container">
     <header>
       <h1>age-mail</h1>
-      <p class="subtitle">Send end-to-end encrypted messages via <a href="https://age-encryption.org" target="_blank" rel="noopener">age</a>.<br> More about this project <a href="https://github.com/dhcgn/age-web-gateway/blob/main/README.md" target="_blank" rel="noopener">github.com/dhcgn/age-web-gateway</a></p>
+      <p class="subheading">Send anonymous & confidential information to people who made their age public key public.</p>
+      <p class="subtitle">Uses <a href="https://age-encryption.org" target="_blank" rel="noopener">age encryption</a>. For this see the <a href="https://github.com/dhcgn/age-web-gateway" target="_blank" rel="noopener">age-mail project</a>.</p>
     </header>
 
     <!-- Privacy notice (dismissal persisted in localStorage, re-shown after 30 days) -->
@@ -21,10 +24,15 @@
       <button id="privacy-notice-dismiss" class="privacy-notice-dismiss" type="button" aria-label="Dismiss">×</button>
       <h2>Before you send</h2>
       <ul>
-        <li>The <strong>recipient's email address is visible</strong> to the operator of this server. Address lookup and delivery require it.</li>
-        <li>The <strong>message content and your identity as sender are not visible</strong> to the operator. Encryption happens in your browser; the server only relays ciphertext.</li>
-        <li>This means the operator can see <em>who</em> you send to, but not <em>what</em> you send or who <em>you</em> are. Choose a server you are comfortable telling that to.</li>
-        <li><strong>The operator should only be trusted to a limited extent</strong> — they cannot read your message, but they could log recipient addresses, observe traffic patterns, or be compelled to do so. Don't pick a server you would not pick to handle the metadata about your conversations.</li>
+        <li>The <strong>recipient's email address is visible</strong> to the operator of this server. Address lookup and
+          delivery require it.</li>
+        <li>The <strong>message content and your identity as sender are not visible</strong> to the operator. Encryption
+          happens in your browser; the server only relays ciphertext.</li>
+        <li>This means the operator can see <em>who</em> you send to, but not <em>what</em> you send or who <em>you</em>
+          are. Choose a server you are comfortable telling that to.</li>
+        <li><strong>The operator should only be trusted to a limited extent</strong> — they cannot read your message,
+          but they could log recipient addresses, observe traffic patterns, or be compelled to do so. Don't pick a
+          server you would not pick to handle the metadata about your conversations.</li>
       </ul>
     </aside>
 
@@ -32,16 +40,22 @@
       <!-- Recipients -->
       <div class="field">
         <label for="recipients-input">Recipients</label>
+        <div class="field-hint">
+          Recipients must have their age public key published. Entered recipients will be checked if a public key is
+          published.
+        </div>
         <div class="recipients-wrapper">
           <div id="recipients-list" class="recipients-list"></div>
-          <input type="text" id="recipients-input" placeholder="user@domain.de or domain.de (comma/space separated)" autocomplete="off">
+          <input type="text" id="recipients-input" placeholder="user@domain.de or domain.de (comma/space separated)"
+            autocomplete="off">
         </div>
         <div id="recipients-error" class="field-error" hidden></div>
         <a id="copy-url-link" class="copy-url-link" href="#" hidden>Copy link with recipients</a>
         <div id="recent-recipients" class="recent-recipients" hidden>
           <span class="recent-recipients-label">Recent:</span>
           <div id="recent-recipients-list" class="recent-recipients-list"></div>
-          <button id="recent-recipients-clear" class="recent-clear-btn" type="button" title="Remove all recent recipients">clear all</button>
+          <button id="recent-recipients-clear" class="recent-clear-btn" type="button"
+            title="Remove all recent recipients">clear all</button>
         </div>
       </div>
 
@@ -54,11 +68,13 @@
       <!-- Subject (optional, NOT encrypted) -->
       <div class="field">
         <label for="subject-input">Subject <span class="field-label-note">(optional, not encrypted)</span></label>
-        <input type="text" id="subject-input" placeholder="Leave empty for default" autocomplete="off">
-        <div id="subject-warning" class="subject-warning">
+                <div id="subject-warning" class="subject-warning">
           <span aria-hidden="true">⚠</span>
-          This field is not encrypted. Anyone with access to this email can read it. Do not put sensitive information here.
+          This field is <b>not encrypted</b>. Anyone with access to this email can read it. Do not put sensitive information
+          here.
         </div>
+        <input type="text" id="subject-input" placeholder="Leave empty for default" autocomplete="off">
+
       </div>
 
       <!-- Body -->
@@ -70,6 +86,9 @@
       <!-- File attachments -->
       <div class="field">
         <label>Attachments</label>
+         <div class="field-hint">
+          Size is limited, try to keep total attachment size under 10 MB. Files are encrypted and sent as part of the message.
+        </div>
         <div id="drop-zone" class="drop-zone">
           <span class="drop-zone-text">Drop files here or click to select</span>
           <input type="file" id="file-input" multiple hidden>
@@ -91,6 +110,9 @@
 
       <!-- Send button -->
       <button id="send-btn" class="send-btn" disabled>Send Encrypted Message</button>
+      <div class="send-hint">
+        After sending, you can download the plain message for yourself to keep a copy.
+      </div>
 
       <!-- Status -->
       <div id="status" class="status" hidden></div>
@@ -98,13 +120,14 @@
 
     <footer>
       <p>Encryption happens entirely in your browser. The server never sees plaintext.</p>
-      <p><a href="https://github.com/dhcgn/age-web-gateway/blob/main/README.md" target="_blank" rel="noopener">More about this project</a></p>
       <p class="app-version">Version: __APP_VERSION__</p>
     </footer>
 
     <section class="setup-section">
-      <h2>Setup</h2>
-      <p>Publish your age public key via DNS TXT record or HTTPS. See the <a href="https://github.com/dhcgn/age-web-gateway" target="_blank" rel="noopener">GitHub repository</a> for full details.</p>
+      <h2>Setup Recipient Age Public Key</h2>
+      <p>Publish your age public key via DNS TXT record or HTTPS. See the <a
+          href="https://github.com/dhcgn/age-web-gateway" target="_blank" rel="noopener">GitHub repository</a> for full
+        details.</p>
       <h3>DNS TXT record</h3>
       <pre class="code-block">dig +short TXT _age.your-domain.com
 "your-domain.com;dave@your-domain.com;age1a3xsw5j5d27k4zmp5wzr7kp49m7gvgt87f32gq3he7da0r4jne6qyk4mmy"</pre>
@@ -137,4 +160,5 @@
 
   <script type="module" src="app.js"></script>
 </body>
+
 </html>
