@@ -19,3 +19,36 @@ else
 	echo "Decryption failed with exit code $decrypt_exit_code" >&2
 	exit "$decrypt_exit_code"
 fi
+
+echo "Decrypting PQ encrypted message..."
+if age --decrypt -i id-pq message-pq.age > message.plain-pq.txt; then
+	echo "Decrypted message:"
+	cat message.plain-pq.txt
+	printf '\n'
+else
+	decrypt_exit_code=$?
+	echo "Decryption failed with exit code $decrypt_exit_code" >&2
+	exit "$decrypt_exit_code"
+fi
+
+echo "Decrypting Multi Classic encrypted message..."
+if age --decrypt -i id message-multi.age > message.plain-multi-classic.txt; then
+	echo "Decrypted message:"
+	cat message.plain-multi-classic.txt
+	printf '\n'
+else
+	decrypt_exit_code=$?
+	echo "Decryption failed with exit code $decrypt_exit_code" >&2
+	exit "$decrypt_exit_code"
+fi
+
+echo "Decrypting Multi PQ encrypted message..."
+if age --decrypt -i id-pq message-multi.age > message.plain-multi-pq.txt; then
+	echo "Decrypted message:"
+	cat message.plain-multi-pq.txt
+	printf '\n'
+else
+	decrypt_exit_code=$?
+	echo "Decryption failed with exit code $decrypt_exit_code" >&2
+	exit "$decrypt_exit_code"
+fi
