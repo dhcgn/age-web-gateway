@@ -49,13 +49,23 @@ export function getSendDifficulty(): number {
   return getDifficulty();
 }
 
+// randomNonceStart returns a 32-bit random offset, used so concurrent PoW
+// solves within the same second don't all converge on the same nonce (which
+// would produce identical tokens and trip the server's replay cache).
+function randomNonceStart(): number {
+  const buf = new Uint32Array(1);
+  crypto.getRandomValues(buf);
+  return buf[0];
+}
+
 export async function solvePoW(
   difficulty: number,
   onProgress?: PoWProgressCallback
 ): Promise<string> {
   const ts = Math.floor(Date.now() / 1000).toString();
   const encoder = new TextEncoder();
-  let nonce = 0;
+  let nonce = randomNonceStart();
+  let hashesChecked = 0;
   const batchSize = 5000;
   const expectedHashes = expectedHashesForDifficulty(difficulty);
 
@@ -65,6 +75,7 @@ export async function solvePoW(
       const data = encoder.encode(preimage);
       const hashBuffer = await crypto.subtle.digest("SHA-256", data);
       const hashArray = new Uint8Array(hashBuffer);
+      hashesChecked++;
 
       if (countLeadingZeroBits(hashArray) >= difficulty) {
         return ts + "." + nonce.toString();
@@ -74,9 +85,9 @@ export async function solvePoW(
 
     if (onProgress) {
       // Model completion as 1 - exp(-k / E[k]), which is a smooth approximation for geometric trials.
-      const completionProbability = 1 - Math.exp(-nonce / expectedHashes);
+      const completionProbability = 1 - Math.exp(-hashesChecked / expectedHashes);
       onProgress({
-        hashesChecked: nonce,
+        hashesChecked,
         difficulty,
         expectedHashes,
         completionProbability,

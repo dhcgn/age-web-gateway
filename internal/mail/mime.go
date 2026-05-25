@@ -3,6 +3,7 @@ package mail
 import (
 	"bytes"
 	"fmt"
+	"mime"
 	"mime/multipart"
 	"net/textproto"
 	"time"
@@ -15,9 +16,13 @@ type Attachment struct {
 	Index   int    // 1-based
 }
 
-// AssembleMIME builds a multipart/mixed MIME message.
-func AssembleMIME(from, to string, message []byte, attachments []Attachment) ([]byte, error) {
+// AssembleMIME builds a multipart/mixed MIME message. The subject is
+// composed via ComposeSubject and RFC 2047 Q-encoded so non-ASCII
+// characters survive transport.
+func AssembleMIME(from, to, subject string, message []byte, attachments []Attachment) ([]byte, error) {
 	var buf bytes.Buffer
+
+	encodedSubject := mime.QEncoding.Encode("utf-8", ComposeSubject(subject))
 
 	// Write top-level headers.
 	messageID := fmt.Sprintf("<%d.agemail@%s>", time.Now().UnixNano(), "agemail")
@@ -25,7 +30,7 @@ func AssembleMIME(from, to string, message []byte, attachments []Attachment) ([]
 	buf.WriteString("To: " + to + "\r\n")
 	buf.WriteString("Date: " + time.Now().UTC().Format(time.RFC1123Z) + "\r\n")
 	buf.WriteString("Message-ID: " + messageID + "\r\n")
-	buf.WriteString("Subject: You have received an encrypted message\r\n")
+	buf.WriteString("Subject: " + encodedSubject + "\r\n")
 	buf.WriteString("MIME-Version: 1.0\r\n")
 
 	w := multipart.NewWriter(&buf)

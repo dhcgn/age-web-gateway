@@ -16,14 +16,16 @@ func TestMatchRecords_ExactMatch(t *testing.T) {
 	}
 }
 
-func TestMatchRecords_CatchAllFallback(t *testing.T) {
+func TestMatchRecords_NoCatchAllFallback(t *testing.T) {
+	// A bare-domain (would-be catch-all) record must NOT match a specific
+	// user@domain query. Matches are exact-only.
 	records := []Record{
 		{Match: "domain.de", Delivery: "catchall@domain.de", AgeKey: "age1key1"},
 	}
 
 	matched := matchRecords(records, "unknown@domain.de", "domain.de")
-	if len(matched) != 1 || matched[0].AgeKey != "age1key1" {
-		t.Fatalf("expected catch-all fallback, got %+v", matched)
+	if len(matched) != 0 {
+		t.Fatalf("expected no match (no catch-all fallback), got %+v", matched)
 	}
 }
 
@@ -64,6 +66,69 @@ func TestMatchRecords_NoMatch(t *testing.T) {
 	matched := matchRecords(records, "user@domain.de", "domain.de")
 	if len(matched) != 0 {
 		t.Fatalf("expected no match, got %+v", matched)
+	}
+}
+
+func TestSelectKey(t *testing.T) {
+	tests := []struct {
+		name       string
+		keys       []string
+		wantKey    string
+		wantReason string
+	}{
+		{
+			name:       "empty",
+			keys:       nil,
+			wantKey:    "",
+			wantReason: "",
+		},
+		{
+			name:       "single classical",
+			keys:       []string{"age1classic"},
+			wantKey:    "age1classic",
+			wantReason: "single",
+		},
+		{
+			name:       "single PQ",
+			keys:       []string{"age1pq1hybrid"},
+			wantKey:    "age1pq1hybrid",
+			wantReason: "single",
+		},
+		{
+			name:       "classical and PQ - PQ wins",
+			keys:       []string{"age1classic", "age1pq1hybrid"},
+			wantKey:    "age1pq1hybrid",
+			wantReason: "pq-preferred",
+		},
+		{
+			name:       "PQ listed first",
+			keys:       []string{"age1pq1hybrid", "age1classic"},
+			wantKey:    "age1pq1hybrid",
+			wantReason: "pq-preferred",
+		},
+		{
+			name:       "two classical - first wins",
+			keys:       []string{"age1classic1", "age1classic2"},
+			wantKey:    "age1classic1",
+			wantReason: "pq-unavailable",
+		},
+		{
+			name:       "two PQ - first wins",
+			keys:       []string{"age1pq1first", "age1pq1second"},
+			wantKey:    "age1pq1first",
+			wantReason: "pq-preferred",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotKey, gotReason := selectKey(tt.keys)
+			if gotKey != tt.wantKey {
+				t.Errorf("selectKey key = %q, want %q", gotKey, tt.wantKey)
+			}
+			if gotReason != tt.wantReason {
+				t.Errorf("selectKey reason = %q, want %q", gotReason, tt.wantReason)
+			}
+		})
 	}
 }
 

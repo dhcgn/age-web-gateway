@@ -81,7 +81,7 @@ func (s *CloudflareService) Send(p Payload) error {
 	body := cfRequest{
 		To:          p.To,
 		From:        p.From,
-		Subject:     "You have received an encrypted message",
+		Subject:     ComposeSubject(p.Subject),
 		Text:        cfNoticeText,
 		Attachments: atts,
 	}

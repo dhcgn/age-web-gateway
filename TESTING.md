@@ -1,3 +1,47 @@
+## Test Recipients
+
+All records for copy/paste:
+
+```
+testing.age.hdev.io;a@testing.age.hdev.io;b@testing.age.hdev.io;c@testing.age.hdev.io;d@testing.age.hdev.io;e@testing.age.hdev.io;f@testing.age.hdev.io;a2@testing.age.hdev.io; non-extings@testing.age.hdev.io
+```
+
+### 1. Record
+
+> `TXT _age.testing.age.hdev.io.`
+
+- testing.age.hdev.io (Sending to: catchall@nonexisting)
+- a@testing.age.hdev.io (Sending to: a@nonexisting)
+- b@testing.age.hdev.io (Sending to: b@nonexisting)
+- c@testing.age.hdev.io (Sending to: c@nonexisting)
+- d@testing.age.hdev.io (Sending to: c@nonexisting, missmached delivery)
+- e@testing.age.hdev.io (Mail not set)
+- f@testing.age.hdev.io (Malformed record)
+
+### 2. Record
+
+> `TXT _age.testing.age.hdev.io.`
+
+- a2@testing.age.hdev.io (Sending to: a2@nonexisting)
+- a3@testing.age.hdev.io (Classic Key, Sending to: a3@testing.age.hdev.io)
+
+### 3. Record
+
+> `.well-known/age` file for `testing.age.hdev.io`
+
+- a3@testing.age.hdev.io (PQ Key, Sending to: a3@testing.age.hdev.io)
+- a4@testing.age.hdev.io (PQ Key, Sending to: a4@testing.age.hdev.io)
+
+### DNS Lookup Command Line
+
+```bash
+dig TXT _age.testing.age.hdev.io.
+```
+
+```bash
+curl -s https://testing.age.hdev.io/.well-known/age
+```
+
 ## Test Key
 
 ```ini
