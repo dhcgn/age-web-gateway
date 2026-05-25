@@ -52,6 +52,10 @@ Be clear about limits: malicious browser extensions, compromised endpoints, or m
 
 You can send anonymous age-encrypted messages and attachments to recipients who published public keys.
 
+Backend size limits:
+- Cloudflare Email API: [5 MiB](https://developers.cloudflare.com/email-service/api/send-emails/rest-api/#attachments)
+- SMTP: 25 MB
+
 ## Recipient trust levels
 
 Recipients can have different security levels depending on key discovery:
