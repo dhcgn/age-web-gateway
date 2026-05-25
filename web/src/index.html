@@ -7,6 +7,7 @@
   <meta name="pow-difficulty" content="__POW_DIFFICULTY__">
   <meta name="pow-difficulty-send" content="__POW_DIFFICULTY_SEND__">
   <meta name="app-version" content="__APP_VERSION__">
+  <meta name="mail-backend-max-size-mb" content="__MAIL_BACKEND_MAX_SIZE_MB__">
   <title>age-mail - Send Encrypted Messages</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -87,7 +88,7 @@
       <div class="field">
         <label>Attachments</label>
          <div class="field-hint">
-          Size is limited, try to keep total attachment size under 10 MB. Files are encrypted and sent as part of the message.
+          Size is limited based on the mail backend. Files are encrypted and sent as part of the message.
         </div>
         <div id="drop-zone" class="drop-zone">
           <span class="drop-zone-text">Drop files here or click to select</span>

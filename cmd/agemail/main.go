@@ -114,7 +114,16 @@ func main() {
 		slog.Error("failed to open embedded web/dist", "error", err)
 		os.Exit(1)
 	}
-	indexHTML := injectRuntimeValues(distFS, cfg.PoWDifficulty, powDifficultyMailSend, version)
+	
+	// Determine max message size in MB based on mail backend
+	var maxSizeMB int
+	if cfg.MailBackend == "cloudflare" {
+		maxSizeMB = 5
+	} else {
+		maxSizeMB = 25
+	}
+	
+	indexHTML := injectRuntimeValues(distFS, cfg.PoWDifficulty, powDifficultyMailSend, version, maxSizeMB)
 	staticHandler := http.FileServer(http.FS(distFS))
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -152,8 +161,8 @@ func main() {
 }
 
 // injectRuntimeValues reads index.html from the embedded FS and injects
-// runtime placeholders for PoW difficulty and app version.
-func injectRuntimeValues(distFS fs.FS, difficultyLookup int, difficultySend int, version string) []byte {
+// runtime placeholders for PoW difficulty, app version, and max message size.
+func injectRuntimeValues(distFS fs.FS, difficultyLookup int, difficultySend int, version string, maxSizeMB int) []byte {
 	data, err := fs.ReadFile(distFS, "index.html")
 	if err != nil {
 		slog.Warn("could not read index.html for runtime injection", "error", err)
@@ -163,7 +172,8 @@ func injectRuntimeValues(distFS fs.FS, difficultyLookup int, difficultySend int,
 	html = strings.ReplaceAll(html, "__POW_DIFFICULTY__", strconv.Itoa(difficultyLookup))
 	html = strings.ReplaceAll(html, "__POW_DIFFICULTY_SEND__", strconv.Itoa(difficultySend))
 	html = strings.ReplaceAll(html, "__APP_VERSION__", version)
-	slog.Debug("index.html runtime values injected", "difficulty_lookup", difficultyLookup, "difficulty_send", difficultySend, "version", version)
+	html = strings.ReplaceAll(html, "__MAIL_BACKEND_MAX_SIZE_MB__", strconv.Itoa(maxSizeMB))
+	slog.Debug("index.html runtime values injected", "difficulty_lookup", difficultyLookup, "difficulty_send", difficultySend, "version", version, "max_size_mb", maxSizeMB)
 	return []byte(html)
 }
 

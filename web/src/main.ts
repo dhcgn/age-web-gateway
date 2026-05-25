@@ -139,13 +139,22 @@ function renderRecentRecipients(): void {
   }
 }
 
-const SIZE_WARN_BYTES = 10 * 1024 * 1024;
+function getMaxSizeMB(): number {
+  const meta = document.querySelector('meta[name="mail-backend-max-size-mb"]');
+  if (meta) {
+    const val = parseInt(meta.getAttribute("content") || "10", 10);
+    return isNaN(val) ? 10 : val;
+  }
+  return 10; // default fallback
+}
 
 function formatMB(bytes: number): string {
   return (bytes / (1024 * 1024)).toFixed(1) + " MB";
 }
 
 function updateSizeWarning(): void {
+  const maxSizeMB = getMaxSizeMB();
+  const SIZE_WARN_BYTES = maxSizeMB * 1024 * 1024;
   const bodyBytes = new TextEncoder().encode(bodyInput.value).length;
   let total = bodyBytes;
   for (const f of files) {
