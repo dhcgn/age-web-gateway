@@ -2,7 +2,6 @@
 
 [![CI](https://github.com/dhcgn/age-web-gateway/actions/workflows/ci.yml/badge.svg)](https://github.com/dhcgn/age-web-gateway/actions/workflows/ci.yml)
 [![Release](https://github.com/dhcgn/age-web-gateway/actions/workflows/release.yml/badge.svg)](https://github.com/dhcgn/age-web-gateway/actions/workflows/release.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/dhcgn/age-web-gateway)](https://goreportcard.com/report/github.com/dhcgn/age-web-gateway)
 ![GitHub go.mod Go version (branch)](https://img.shields.io/github/go-mod/go-version/dhcgn/age-web-gateway/main)
 [![GitHub Release](https://img.shields.io/github/v/release/dhcgn/age-web-gateway)](https://github.com/dhcgn/age-web-gateway/releases)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fage.hdev.io%2F&label=Website)](https://age.hdev.io/)
