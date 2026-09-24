@@ -1,4 +1,4 @@
-# Copilot Instructions — age-web-gateway
+# Instructions — age-web-gateway
 
 ## Build & Run
 
