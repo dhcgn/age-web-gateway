@@ -19,7 +19,6 @@ export function parseDeepLink(): { to: string[]; body: string; subject: string }
 }
 
 export function applyDeepLink(
-  recipientsInput: HTMLInputElement,
   bodyInput: HTMLTextAreaElement,
   subjectInput: HTMLInputElement,
   addRecipientBadge: (address: string) => void

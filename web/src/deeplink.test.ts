@@ -107,11 +107,10 @@ describe("applyDeepLink", () => {
       replaced.push(url);
     });
     try {
-      const recipientsInput = fakeInput();
       const bodyInput = fakeTextArea();
       const subjectInput = fakeInput();
       const badged: Array<string> = [];
-      applyDeepLink(recipientsInput, bodyInput, subjectInput, (addr) => {
+      applyDeepLink(bodyInput, subjectInput, (addr) => {
         badged.push(addr);
       });
       assert.strictEqual(bodyInput.value, "hello");
@@ -131,7 +130,6 @@ describe("applyDeepLink", () => {
     try {
       const badged: Array<string> = [];
       applyDeepLink(
-        fakeInput("untouched"),
         fakeTextArea(),
         fakeInput(),
         (addr) => {

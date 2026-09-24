@@ -26,7 +26,6 @@ function powBarPercent(completionProbability: number): number {
 // --- DOM elements ---
 const recipientsInput = document.getElementById("recipients-input") as HTMLInputElement;
 const recipientsList = document.getElementById("recipients-list") as HTMLDivElement;
-const recipientsError = document.getElementById("recipients-error") as HTMLDivElement;
 const trustWarning = document.getElementById("trust-warning") as HTMLDivElement;
 const trustWarningText = document.getElementById("trust-warning-text") as HTMLSpanElement;
 const bodyInput = document.getElementById("body-input") as HTMLTextAreaElement;
@@ -841,7 +840,7 @@ async function consumeSharedPayload(): Promise<void> {
 renderRecentRecipients();
 
 // --- Deep-link ---
-applyDeepLink(recipientsInput, bodyInput, subjectInput, addRecipientBadge);
+applyDeepLink(bodyInput, subjectInput, addRecipientBadge);
 initDebugSection();
 updateUI();
 void consumeSharedPayload();
