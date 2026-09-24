@@ -38,6 +38,8 @@ go vet ./...
 
 ## Architecture
 
+Consider also the file: [ARCHITECTURE.md](ARCHITECTURE.md)
+
 Single Go binary serves both API and embedded frontend. No database — only an in-memory PoW replay cache.
 
 **Request flow:** Browser encrypts content with age → solves proof-of-work → `POST /api/send` → backend relays opaque ciphertext via SMTP or Cloudflare Email API. The backend never sees plaintext.
