@@ -1,0 +1,798 @@
+lockfile_version: '1'
+generated_at: '2026-09-24T14:40:31.053592+00:00'
+apm_version: 0.28.0
+dependencies:
+- repo_url: dhcgn/personal-dev-skills
+  name: dev-web
+  host: github.com
+  resolved_commit: e7e94374c8591faf8b030a22da4e2dee49a32622
+  version: 1.2.0
+  virtual_path: profiles/dev-web
+  is_virtual: true
+  package_type: apm_package
+  content_hash: sha256:116aa5ec3191175adbbf70562bf9c54412497fb7679fa1fd3c90fa403a1b76fb
+- repo_url: dhcgn/personal-dev-skills
+  name: dev-base
+  host: github.com
+  resolved_commit: e7e94374c8591faf8b030a22da4e2dee49a32622
+  version: 1.2.0
+  virtual_path: profiles/dev-base
+  is_virtual: true
+  depth: 2
+  resolved_by: dhcgn/personal-dev-skills
+  package_type: apm_package
+  content_hash: sha256:2ae1d4cb7c4bfd5ad343f7e4082693ee451a5d33b76804928f123dd987c0a5b5
+- repo_url: cloudflare/security-audit-skill
+  name: security-audit-skill
+  host: github.com
+  resolved_commit: c1c8a8c1471069fb0e188eeaff69b8e8db6564a8
+  version: unknown
+  depth: 3
+  resolved_by: dhcgn/personal-dev-skills
+  package_type: skill_bundle
+  deployed_files:
+  - .agents/skills/security-audit
+  - .agents/skills/security-audit/AI-AND-LLM.md
+  - .agents/skills/security-audit/ATTACK-CLASSES.md
+  - .agents/skills/security-audit/CLIENT-SIDE.md
+  - .agents/skills/security-audit/CLOUD-AND-DEPLOYMENT.md
+  - .agents/skills/security-audit/DATA-ISOLATION-AND-LIFECYCLE.md
+  - .agents/skills/security-audit/DESKTOP-MOBILE-AND-LOCAL-IPC.md
+  - .agents/skills/security-audit/HUNTING.md
+  - .agents/skills/security-audit/MEMORY-SAFETY-AND-BINARY.md
+  - .agents/skills/security-audit/PROTOCOLS-RPC-AND-MESSAGING.md
+  - .agents/skills/security-audit/RECONNAISSANCE.md
+  - .agents/skills/security-audit/RESOURCE-EXHAUSTION-AND-AVAILABILITY.md
+  - .agents/skills/security-audit/SKILL.md
+  - .agents/skills/security-audit/SUPPLY-CHAIN-AND-RELEASE.md
+  - .agents/skills/security-audit/VALIDATION-AND-REPORTING.md
+  - .agents/skills/security-audit/WEB-PROTOCOL-AND-AUTH.md
+  - .agents/skills/security-audit/report-schema.json
+  - .agents/skills/security-audit/validate-coverage-ledger.cjs
+  - .agents/skills/security-audit/validate-coverage-ledger.test.cjs
+  - .agents/skills/security-audit/validate-findings.cjs
+  - .agents/skills/security-audit/validate-findings.test.cjs
+  deployed_file_hashes:
+    .agents/skills/security-audit/AI-AND-LLM.md: sha256:7335a95c43554eadefcf03ece639291bb0e038c398a179299e3887ffe06bd2ef
+    .agents/skills/security-audit/ATTACK-CLASSES.md: sha256:3ee4f00c6e8c9dcf6dd02dd5ac2a4ceb322e2085f3e9fbe79cf0c6330bc7ef83
+    .agents/skills/security-audit/CLIENT-SIDE.md: sha256:613f6b98f86083e045525c5b60154ffdab122bac35f1e05eb17488e6e453370c
+    .agents/skills/security-audit/CLOUD-AND-DEPLOYMENT.md: sha256:3c80f3088be22345e07b057c056d6ed99fe2b0304f794398964f7ccd5a496ca3
+    .agents/skills/security-audit/DATA-ISOLATION-AND-LIFECYCLE.md: sha256:307dcb3e24d292715c4a041190e7bb135646a37eb6187619ae01d000a634a4ad
+    .agents/skills/security-audit/DESKTOP-MOBILE-AND-LOCAL-IPC.md: sha256:58eae8ee0ca6a46611c501ec5a3ab47fdff88dd7db0d8d74789bbf8bb19d8cb2
+    .agents/skills/security-audit/HUNTING.md: sha256:71c121decea1322c47c718f6e110f1a892980bb4266bd7ac55ef043a213ade09
+    .agents/skills/security-audit/MEMORY-SAFETY-AND-BINARY.md: sha256:7c8b0dccfb35315cca2455509674d49632b2fe37e1f3aac16c1a496a7e9924a7
+    .agents/skills/security-audit/PROTOCOLS-RPC-AND-MESSAGING.md: sha256:8b73816fa5b3697c9c40977f0c836b40f01d6e81929ff2720fe83ce089e9a619
+    .agents/skills/security-audit/RECONNAISSANCE.md: sha256:02ca887aca84de8ae137f1891bd2f0a54f28d3fa6da92a27f54734382b3381a2
+    .agents/skills/security-audit/RESOURCE-EXHAUSTION-AND-AVAILABILITY.md: sha256:4326fab5c92a0b4c420a70196254040105cd794026562130b59bf1a6db3e4baa
+    .agents/skills/security-audit/SKILL.md: sha256:5e3e96a1e438d8f35fef0a1e38f02d4f00e2bdf910401b7dfe00e6779c6dac85
+    .agents/skills/security-audit/SUPPLY-CHAIN-AND-RELEASE.md: sha256:f372e919940e335468ba1ae09f99026c3986a345f7fe26f8068f132e199f52a5
+    .agents/skills/security-audit/VALIDATION-AND-REPORTING.md: sha256:b892470cb89bb31f33403e050d4bdfbe2cdaef940ade1496fa65e32b2e129449
+    .agents/skills/security-audit/WEB-PROTOCOL-AND-AUTH.md: sha256:4f3066dffa23c5635859187be9b96c32f2aff29a688186b91ff0c63e47d62b5c
+    .agents/skills/security-audit/report-schema.json: sha256:6575c9de4a62255699ea052ebf9a49ebfb373a32891bcd89af6f55cc84b35519
+    .agents/skills/security-audit/validate-coverage-ledger.cjs: sha256:2eb280bd2e33c002916f86db9b29f9edfedb6454e5db973c766290465b868ac8
+    .agents/skills/security-audit/validate-coverage-ledger.test.cjs: sha256:cfb9df26b03469a4279a70e7664a2a5434dd6f8c2c204e91f9b0aeb9dd71e648
+    .agents/skills/security-audit/validate-findings.cjs: sha256:e85f232e36bfac0f866f244da50376692d6b45c690beadcb00608b0e6c8b5283
+    .agents/skills/security-audit/validate-findings.test.cjs: sha256:b92001117a92c4161d43777a0ba2fa182a8a4d97f2304cc8c0cee5331497b73b
+  content_hash: sha256:414184860d72fa1d44fbdf8267672fec765ddab1f2e7c12f8c859122e2223adb
+- repo_url: dhcgn/personal-dev-skills
+  name: devcontainer-debug-windows
+  host: github.com
+  resolved_commit: e7e94374c8591faf8b030a22da4e2dee49a32622
+  version: unknown
+  virtual_path: .apm/skills/devcontainer-debug-windows
+  is_virtual: true
+  depth: 3
+  resolved_by: dhcgn/personal-dev-skills
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/devcontainer-debug-windows
+  - .agents/skills/devcontainer-debug-windows/SKILL.md
+  deployed_file_hashes:
+    .agents/skills/devcontainer-debug-windows/SKILL.md: sha256:ddcbef8c331f161541d08f00fa682c1350c910d1f2dadacd395d072d13d9a8bd
+  content_hash: sha256:fa48f4d53c0c625d0010141adccaaa1743639fdcf2ed5bf2b48b8d1e4602d98e
+- repo_url: dhcgn/personal-dev-skills
+  name: gh
+  host: github.com
+  resolved_commit: e7e94374c8591faf8b030a22da4e2dee49a32622
+  version: unknown
+  virtual_path: .apm/skills/gh
+  is_virtual: true
+  depth: 3
+  resolved_by: dhcgn/personal-dev-skills
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/gh
+  - .agents/skills/gh/SKILL.md
+  deployed_file_hashes:
+    .agents/skills/gh/SKILL.md: sha256:fb77a6b4d05ed8491399f1868a0b280c917116c0a4a3120324b3ea340aeb8c37
+  content_hash: sha256:11b1620bd3cd417f86cb6ae6af940cd13ffdba26ea6163d4ed88bc9a259d2d77
+- repo_url: dhcgn/personal-dev-skills
+  name: glossary-create
+  host: github.com
+  resolved_commit: e7e94374c8591faf8b030a22da4e2dee49a32622
+  version: unknown
+  virtual_path: .apm/skills/glossary-create
+  is_virtual: true
+  depth: 3
+  resolved_by: dhcgn/personal-dev-skills
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/glossary-create
+  - .agents/skills/glossary-create/SKILL.md
+  deployed_file_hashes:
+    .agents/skills/glossary-create/SKILL.md: sha256:365526b6d299941976a22462e78e6b8dbc754b634a0f640fb9311a6d1efa8eb3
+  content_hash: sha256:43dd83774b3a601a451990045f23ccbfdbaa8fd0dff307c84f129d48faa1f108
+- repo_url: dhcgn/personal-dev-skills
+  name: glossary-create-issue
+  host: github.com
+  resolved_commit: e7e94374c8591faf8b030a22da4e2dee49a32622
+  version: unknown
+  virtual_path: .apm/skills/glossary-create-issue
+  is_virtual: true
+  depth: 3
+  resolved_by: dhcgn/personal-dev-skills
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/glossary-create-issue
+  - .agents/skills/glossary-create-issue/SKILL.md
+  deployed_file_hashes:
+    .agents/skills/glossary-create-issue/SKILL.md: sha256:9e7353f76e019cf09353860afb2749ac3242dbd242d6714b2b79350e92c51ad2
+  content_hash: sha256:fc0cfc7c0f2723b97176dd1b67689f8f99209b7084a52b9c79988c56fb3743d2
+- repo_url: dhcgn/personal-dev-skills
+  name: glossary-init
+  host: github.com
+  resolved_commit: e7e94374c8591faf8b030a22da4e2dee49a32622
+  version: unknown
+  virtual_path: .apm/skills/glossary-init
+  is_virtual: true
+  depth: 3
+  resolved_by: dhcgn/personal-dev-skills
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/glossary-init
+  - .agents/skills/glossary-init/SKILL.md
+  - .agents/skills/glossary-init/assets/glossary/gen/main.go
+  - .agents/skills/glossary-init/assets/glossary/generate.go
+  - .agents/skills/glossary-init/assets/glossary/glossary.go
+  - .agents/skills/glossary-init/assets/glossary/glossary_test.go
+  deployed_file_hashes:
+    .agents/skills/glossary-init/SKILL.md: sha256:8acf3ce62cda3cc79dfae042f41480044696fae2228f26a94d08844ab263a947
+    .agents/skills/glossary-init/assets/glossary/gen/main.go: sha256:28c5a5b1601b4e76f10db73738351007a53be98a7af243dcb90794d4c83411d6
+    .agents/skills/glossary-init/assets/glossary/generate.go: sha256:30b4274b63640d696755a9ba1571064608de1e9fdbf8757a117277ad070f7fe1
+    .agents/skills/glossary-init/assets/glossary/glossary.go: sha256:c0412ce6c096475265030d8f092fd9a465f4a566396ed7f302319fc3002b3bec
+    .agents/skills/glossary-init/assets/glossary/glossary_test.go: sha256:1cf2beefef600567416ee421a596c329e796c6f3105b36cf6b9686464107900e
+  content_hash: sha256:3a3dbcda86c4a10757e2245783416657dd854f975c5b3c0c7020baf7f4a030b9
+- repo_url: dhcgn/personal-dev-skills
+  name: glossary-search
+  host: github.com
+  resolved_commit: e7e94374c8591faf8b030a22da4e2dee49a32622
+  version: unknown
+  virtual_path: .apm/skills/glossary-search
+  is_virtual: true
+  depth: 3
+  resolved_by: dhcgn/personal-dev-skills
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/glossary-search
+  - .agents/skills/glossary-search/SKILL.md
+  - .agents/skills/glossary-search/scripts/glossary-search.ps1
+  - .agents/skills/glossary-search/scripts/glossary-search.sh
+  deployed_file_hashes:
+    .agents/skills/glossary-search/SKILL.md: sha256:f52ad0353e6e2af62aa9742795384dd42d46c01ecf742c96f9bac94255c3e357
+    .agents/skills/glossary-search/scripts/glossary-search.ps1: sha256:35a595203dcd71272f5193f984fd3eb2dc47dc99bc081af69e0d121be8477c16
+    .agents/skills/glossary-search/scripts/glossary-search.sh: sha256:2b988135a2039bd4eeae11ee964557ac3e4bb34620715decc41670f4ca9635d6
+  content_hash: sha256:f2e529be50d760190d230aed3da95e2e1504d57b03c9dd381b30346d54f6e858
+- repo_url: dhcgn/personal-dev-skills
+  name: markdown-from-website
+  host: github.com
+  resolved_commit: e7e94374c8591faf8b030a22da4e2dee49a32622
+  version: unknown
+  virtual_path: .apm/skills/markdown-from-website
+  is_virtual: true
+  depth: 3
+  resolved_by: dhcgn/personal-dev-skills
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/markdown-from-website
+  - .agents/skills/markdown-from-website/SKILL.md
+  - .agents/skills/markdown-from-website/scripts/get-markdown.ps1
+  - .agents/skills/markdown-from-website/scripts/get-markdown.sh
+  deployed_file_hashes:
+    .agents/skills/markdown-from-website/SKILL.md: sha256:9cdd8a342b42add7d7ffb09d0954f2d1aa56145c245edef444a8fb2c74de1ed0
+    .agents/skills/markdown-from-website/scripts/get-markdown.ps1: sha256:8f7cd9332537ce47e708b2c89240ac7aa6c3c7ed7946f16ba0535e98c1e9b1fa
+    .agents/skills/markdown-from-website/scripts/get-markdown.sh: sha256:089fa053aa393ace92c89a363829836c759551b4a35f46364a796552f78138e4
+  content_hash: sha256:6d60b92cfbe9fe1c1ee306636822c58175f4250d7c0e12c5e57df10b9197c03c
+- repo_url: dhcgn/personal-dev-skills
+  name: rtk
+  host: github.com
+  resolved_commit: e7e94374c8591faf8b030a22da4e2dee49a32622
+  version: unknown
+  virtual_path: .apm/skills/rtk
+  is_virtual: true
+  depth: 3
+  resolved_by: dhcgn/personal-dev-skills
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/rtk
+  - .agents/skills/rtk/SKILL.md
+  deployed_file_hashes:
+    .agents/skills/rtk/SKILL.md: sha256:a1250e77a0404e11156ee2709c8e592d70fcfc00df97169791dec7020a9f7141
+  content_hash: sha256:42b00a447aedfbe67e9c40bc2eb2243c23110f36eb03671b48839bc181fae5a8
+- repo_url: dhcgn/personal-dev-skills
+  name: wsl
+  host: github.com
+  resolved_commit: e7e94374c8591faf8b030a22da4e2dee49a32622
+  version: unknown
+  virtual_path: .apm/skills/wsl
+  is_virtual: true
+  depth: 3
+  resolved_by: dhcgn/personal-dev-skills
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/wsl
+  - .agents/skills/wsl/SKILL.md
+  deployed_file_hashes:
+    .agents/skills/wsl/SKILL.md: sha256:37989ad169642b6351cf5ee4d3c37d8fa0ec3949c421ba6ead8a5105cd5151fc
+  content_hash: sha256:6595d187aea0614f99c311415395932a93bef3ef4a88bb7ac5bba1d2d4ba63e2
+- repo_url: dietrichgebert/ponytail
+  materialization_repo_url: DietrichGebert/ponytail
+  name: ponytail
+  host: github.com
+  resolved_commit: e3ba2aa6f1e6f0bc4d69eb09c9f0d0a93af56156
+  version: e3ba2aa
+  depth: 3
+  resolved_by: dhcgn/personal-dev-skills
+  package_type: marketplace_plugin
+  deployed_files:
+  - .agents/skills/ponytail
+  - .agents/skills/ponytail-audit
+  - .agents/skills/ponytail-audit/SKILL.md
+  - .agents/skills/ponytail-debt
+  - .agents/skills/ponytail-debt/SKILL.md
+  - .agents/skills/ponytail-gain
+  - .agents/skills/ponytail-gain/SKILL.md
+  - .agents/skills/ponytail-help
+  - .agents/skills/ponytail-help/SKILL.md
+  - .agents/skills/ponytail-review
+  - .agents/skills/ponytail-review/SKILL.md
+  - .agents/skills/ponytail/SKILL.md
+  deployed_file_hashes:
+    .agents/skills/ponytail-audit/SKILL.md: sha256:5560b8e383dbe2ddfddc873a1e2bf2e586e23e0cd7d995537482b2315331f6d1
+    .agents/skills/ponytail-debt/SKILL.md: sha256:c84fba75f0ca12bfe83f9a78ea02fd125c5dd3f1fbb18124105a489937f284e6
+    .agents/skills/ponytail-gain/SKILL.md: sha256:24e01d1c9715cb136ba1c4f1e52a95940c0193558b876828e537736480d6408b
+    .agents/skills/ponytail-help/SKILL.md: sha256:2264d1615117b02b0fd5a69ec84cd2757006471a78e4d6c22eed6d581c1d37a4
+    .agents/skills/ponytail-review/SKILL.md: sha256:40df33b58fc6ef889b93585733feb9566b76e9586efa7f376785c1e995197ac0
+    .agents/skills/ponytail/SKILL.md: sha256:1316a2f3f95741d2300b116fe0c2d81ce4a9568656ed0a62643f54aaf09957f2
+  content_hash: sha256:935b0f7886d358f6fa1a17b6f29ecbeb70d16b969ad41cf750c5ff3344575c39
+deployments:
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/devcontainer-debug-windows
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/devcontainer-debug-windows
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/devcontainer-debug-windows
+  content_hash: null
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/devcontainer-debug-windows/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/devcontainer-debug-windows
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/devcontainer-debug-windows
+  content_hash: sha256:ddcbef8c331f161541d08f00fa682c1350c910d1f2dadacd395d072d13d9a8bd
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/gh
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/gh
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/gh
+  content_hash: null
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/gh/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/gh
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/gh
+  content_hash: sha256:fb77a6b4d05ed8491399f1868a0b280c917116c0a4a3120324b3ea340aeb8c37
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/glossary-create
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/glossary-create
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/glossary-create
+  content_hash: null
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/glossary-create-issue
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/glossary-create-issue
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/glossary-create-issue
+  content_hash: null
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/glossary-create-issue/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/glossary-create-issue
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/glossary-create-issue
+  content_hash: sha256:9e7353f76e019cf09353860afb2749ac3242dbd242d6714b2b79350e92c51ad2
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/glossary-create/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/glossary-create
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/glossary-create
+  content_hash: sha256:365526b6d299941976a22462e78e6b8dbc754b634a0f640fb9311a6d1efa8eb3
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/glossary-init
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/glossary-init
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/glossary-init
+  content_hash: null
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/glossary-init/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/glossary-init
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/glossary-init
+  content_hash: sha256:8acf3ce62cda3cc79dfae042f41480044696fae2228f26a94d08844ab263a947
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/glossary-init/assets/glossary/gen/main.go
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/glossary-init
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/glossary-init
+  content_hash: sha256:28c5a5b1601b4e76f10db73738351007a53be98a7af243dcb90794d4c83411d6
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/glossary-init/assets/glossary/generate.go
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/glossary-init
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/glossary-init
+  content_hash: sha256:30b4274b63640d696755a9ba1571064608de1e9fdbf8757a117277ad070f7fe1
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/glossary-init/assets/glossary/glossary.go
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/glossary-init
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/glossary-init
+  content_hash: sha256:c0412ce6c096475265030d8f092fd9a465f4a566396ed7f302319fc3002b3bec
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/glossary-init/assets/glossary/glossary_test.go
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/glossary-init
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/glossary-init
+  content_hash: sha256:1cf2beefef600567416ee421a596c329e796c6f3105b36cf6b9686464107900e
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/glossary-search
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/glossary-search
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/glossary-search
+  content_hash: null
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/glossary-search/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/glossary-search
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/glossary-search
+  content_hash: sha256:f52ad0353e6e2af62aa9742795384dd42d46c01ecf742c96f9bac94255c3e357
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/glossary-search/scripts/glossary-search.ps1
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/glossary-search
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/glossary-search
+  content_hash: sha256:35a595203dcd71272f5193f984fd3eb2dc47dc99bc081af69e0d121be8477c16
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/glossary-search/scripts/glossary-search.sh
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/glossary-search
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/glossary-search
+  content_hash: sha256:2b988135a2039bd4eeae11ee964557ac3e4bb34620715decc41670f4ca9635d6
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/markdown-from-website
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/markdown-from-website
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/markdown-from-website
+  content_hash: null
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/markdown-from-website/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/markdown-from-website
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/markdown-from-website
+  content_hash: sha256:9cdd8a342b42add7d7ffb09d0954f2d1aa56145c245edef444a8fb2c74de1ed0
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/markdown-from-website/scripts/get-markdown.ps1
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/markdown-from-website
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/markdown-from-website
+  content_hash: sha256:8f7cd9332537ce47e708b2c89240ac7aa6c3c7ed7946f16ba0535e98c1e9b1fa
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/markdown-from-website/scripts/get-markdown.sh
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/markdown-from-website
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/markdown-from-website
+  content_hash: sha256:089fa053aa393ace92c89a363829836c759551b4a35f46364a796552f78138e4
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/ponytail
+  runtime: null
+  scope: project
+  owners:
+  - dietrichgebert/ponytail
+  active_owner: dietrichgebert/ponytail
+  content_hash: null
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/ponytail-audit
+  runtime: null
+  scope: project
+  owners:
+  - dietrichgebert/ponytail
+  active_owner: dietrichgebert/ponytail
+  content_hash: null
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/ponytail-audit/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - dietrichgebert/ponytail
+  active_owner: dietrichgebert/ponytail
+  content_hash: sha256:5560b8e383dbe2ddfddc873a1e2bf2e586e23e0cd7d995537482b2315331f6d1
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/ponytail-debt
+  runtime: null
+  scope: project
+  owners:
+  - dietrichgebert/ponytail
+  active_owner: dietrichgebert/ponytail
+  content_hash: null
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/ponytail-debt/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - dietrichgebert/ponytail
+  active_owner: dietrichgebert/ponytail
+  content_hash: sha256:c84fba75f0ca12bfe83f9a78ea02fd125c5dd3f1fbb18124105a489937f284e6
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/ponytail-gain
+  runtime: null
+  scope: project
+  owners:
+  - dietrichgebert/ponytail
+  active_owner: dietrichgebert/ponytail
+  content_hash: null
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/ponytail-gain/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - dietrichgebert/ponytail
+  active_owner: dietrichgebert/ponytail
+  content_hash: sha256:24e01d1c9715cb136ba1c4f1e52a95940c0193558b876828e537736480d6408b
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/ponytail-help
+  runtime: null
+  scope: project
+  owners:
+  - dietrichgebert/ponytail
+  active_owner: dietrichgebert/ponytail
+  content_hash: null
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/ponytail-help/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - dietrichgebert/ponytail
+  active_owner: dietrichgebert/ponytail
+  content_hash: sha256:2264d1615117b02b0fd5a69ec84cd2757006471a78e4d6c22eed6d581c1d37a4
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/ponytail-review
+  runtime: null
+  scope: project
+  owners:
+  - dietrichgebert/ponytail
+  active_owner: dietrichgebert/ponytail
+  content_hash: null
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/ponytail-review/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - dietrichgebert/ponytail
+  active_owner: dietrichgebert/ponytail
+  content_hash: sha256:40df33b58fc6ef889b93585733feb9566b76e9586efa7f376785c1e995197ac0
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/ponytail/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - dietrichgebert/ponytail
+  active_owner: dietrichgebert/ponytail
+  content_hash: sha256:1316a2f3f95741d2300b116fe0c2d81ce4a9568656ed0a62643f54aaf09957f2
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/rtk
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/rtk
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/rtk
+  content_hash: null
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/rtk/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/rtk
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/rtk
+  content_hash: sha256:a1250e77a0404e11156ee2709c8e592d70fcfc00df97169791dec7020a9f7141
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: null
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/AI-AND-LLM.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:7335a95c43554eadefcf03ece639291bb0e038c398a179299e3887ffe06bd2ef
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/ATTACK-CLASSES.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:3ee4f00c6e8c9dcf6dd02dd5ac2a4ceb322e2085f3e9fbe79cf0c6330bc7ef83
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/CLIENT-SIDE.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:613f6b98f86083e045525c5b60154ffdab122bac35f1e05eb17488e6e453370c
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/CLOUD-AND-DEPLOYMENT.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:3c80f3088be22345e07b057c056d6ed99fe2b0304f794398964f7ccd5a496ca3
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/DATA-ISOLATION-AND-LIFECYCLE.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:307dcb3e24d292715c4a041190e7bb135646a37eb6187619ae01d000a634a4ad
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/DESKTOP-MOBILE-AND-LOCAL-IPC.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:58eae8ee0ca6a46611c501ec5a3ab47fdff88dd7db0d8d74789bbf8bb19d8cb2
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/HUNTING.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:71c121decea1322c47c718f6e110f1a892980bb4266bd7ac55ef043a213ade09
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/MEMORY-SAFETY-AND-BINARY.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:7c8b0dccfb35315cca2455509674d49632b2fe37e1f3aac16c1a496a7e9924a7
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/PROTOCOLS-RPC-AND-MESSAGING.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:8b73816fa5b3697c9c40977f0c836b40f01d6e81929ff2720fe83ce089e9a619
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/RECONNAISSANCE.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:02ca887aca84de8ae137f1891bd2f0a54f28d3fa6da92a27f54734382b3381a2
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/RESOURCE-EXHAUSTION-AND-AVAILABILITY.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:4326fab5c92a0b4c420a70196254040105cd794026562130b59bf1a6db3e4baa
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:5e3e96a1e438d8f35fef0a1e38f02d4f00e2bdf910401b7dfe00e6779c6dac85
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/SUPPLY-CHAIN-AND-RELEASE.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:f372e919940e335468ba1ae09f99026c3986a345f7fe26f8068f132e199f52a5
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/VALIDATION-AND-REPORTING.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:b892470cb89bb31f33403e050d4bdfbe2cdaef940ade1496fa65e32b2e129449
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/WEB-PROTOCOL-AND-AUTH.md
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:4f3066dffa23c5635859187be9b96c32f2aff29a688186b91ff0c63e47d62b5c
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/report-schema.json
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:6575c9de4a62255699ea052ebf9a49ebfb373a32891bcd89af6f55cc84b35519
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/validate-coverage-ledger.cjs
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:2eb280bd2e33c002916f86db9b29f9edfedb6454e5db973c766290465b868ac8
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/validate-coverage-ledger.test.cjs
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:cfb9df26b03469a4279a70e7664a2a5434dd6f8c2c204e91f9b0aeb9dd71e648
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/validate-findings.cjs
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:e85f232e36bfac0f866f244da50376692d6b45c690beadcb00608b0e6c8b5283
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/security-audit/validate-findings.test.cjs
+  runtime: null
+  scope: project
+  owners:
+  - cloudflare/security-audit-skill
+  active_owner: cloudflare/security-audit-skill
+  content_hash: sha256:b92001117a92c4161d43777a0ba2fa182a8a4d97f2304cc8c0cee5331497b73b
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/wsl
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/wsl
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/wsl
+  content_hash: null
+- kind: project-relative
+  target: opencode
+  value: .agents/skills/wsl/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - dhcgn/personal-dev-skills/.apm/skills/wsl
+  active_owner: dhcgn/personal-dev-skills/.apm/skills/wsl
+  content_hash: sha256:37989ad169642b6351cf5ee4d3c37d8fa0ec3949c421ba6ead8a5105cd5151fc
