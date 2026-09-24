@@ -13,6 +13,7 @@ import { solvePoW, getDifficulty } from "./pow";
 import { sendMessage } from "./send";
 import type { SendProgress, RecipientSendResult } from "./send";
 import { applyDeepLink } from "./deeplink";
+import { takeSharedPayload } from "./share-store";
 
 const POW_PROGRESS_START = 15;
 const POW_PROGRESS_END = 78;
@@ -803,6 +804,39 @@ if (privacyNotice && privacyNoticeDismiss) {
   });
 }
 
+// Consume files/text shared from Android via the service worker share target
+// (stashed in IndexedDB, signalled by ?share=1).
+async function consumeSharedPayload(): Promise<void> {
+  if (!new URLSearchParams(location.search).has("share")) {
+    return;
+  }
+  history.replaceState(null, "", location.pathname);
+  try {
+    const payload = await takeSharedPayload();
+    if (!payload) {
+      return;
+    }
+    if (payload.subject && !subjectInput.value) {
+      subjectInput.value = payload.subject;
+    }
+    if (payload.body && !bodyInput.value) {
+      bodyInput.value = payload.body;
+    }
+    if (payload.files.length > 0) {
+      addFiles(
+        payload.files.map(
+          (f) => new File([f.blob], f.name, { type: f.type, lastModified: f.lastModified })
+        )
+      );
+    } else {
+      updateSizeWarning();
+      updateUI();
+    }
+  } catch {
+    // Corrupt handoff store; start with a clean form.
+  }
+}
+
 // --- Recent recipients (load from localStorage) ---
 renderRecentRecipients();
 
@@ -810,6 +844,15 @@ renderRecentRecipients();
 applyDeepLink(recipientsInput, bodyInput, subjectInput, addRecipientBadge);
 initDebugSection();
 updateUI();
+void consumeSharedPayload();
+
+// Register the service worker (share target + installability). The app works
+// fully without it; failure just means those extras are unavailable.
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js").catch(() => {
+    // ignore (e.g. insecure context)
+  });
+}
 
 // --- Copy URL with recipients ---
 copyUrlLink.addEventListener("click", (e) => {

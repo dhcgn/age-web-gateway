@@ -94,6 +94,12 @@ See config.example.json for available settings.
 Open this repo in VS Code with the Dev Containers extension: it provides
 Go 1.27 and Node 22 plus all dependencies (see `.devcontainer/`).
 
+## Install as app (PWA)
+
+The web UI is installable (Android: browser menu → "Install app") and
+registers as an Android share target: sharing files from any app opens
+age-mail with them pre-attached (shared text lands in the message body).
+
 ## Project docs and config
 
 - Architecture: [ARCHITECTURE.md](ARCHITECTURE.md)

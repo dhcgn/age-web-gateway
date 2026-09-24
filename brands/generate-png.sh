@@ -14,4 +14,11 @@ render() { # src width height out
 
 for s in 16 32 48 180 192 512 1024; do render icon.svg "$s" "$s" "png/icon-$s.png"; done
 render banner.svg 1280 640 png/banner-1280x640.png
+
+# Maskable PWA icon: 512x512 with the artwork scaled into the ~70% safe zone
+# on a solid brand background (needs ImageMagick for compositing).
+render icon.svg 360 360 png/.icon-maskable-art.png
+magick -size 512x512 "xc:#4338ca" png/.icon-maskable-art.png -gravity center -composite png/icon-maskable-512.png
+rm png/.icon-maskable-art.png
+
 ls png
