@@ -12,6 +12,7 @@ on:
 permissions:
   contents: read
   packages: write
+  pull-requests: write
 
 jobs:
   preview:
@@ -39,10 +40,51 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push preview image
+        # Fork PRs get a read-only token, so validate the build without pushing.
         uses: docker/build-push-action@v7
         with:
           context: .
           file: deploy/Dockerfile
-          push: true
+          push: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Comment preview image
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const marker = '<!-- preview-image -->';
+            const { owner, repo } = context.repo;
+            // Same sources as the type=sha metadata tag, so the tag exists.
+            const prNumber = context.payload.pull_request.number;
+            const shortSha = context.sha.substring(0, 7);
+            const image = `ghcr.io/${owner}/${repo}:pr-${prNumber}-sha-${shortSha}`;
+            const body = `${marker}
+            **Preview image** for this PR (rebuilt on every push):
+
+            \`\`\`
+            docker pull ${image}
+            docker run --rm -p 8080:8080 ${image}
+            \`\`\``;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number: prNumber,
+            });
+            const existing = comments.find((c) => c.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: prNumber,
+                body,
+              });
+            }
