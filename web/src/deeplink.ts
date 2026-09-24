@@ -1,5 +1,3 @@
-import { debouncedLookup } from "./recipients";
-
 /**
  * Parse the URL fragment for deep-link prefill.
  * Supported: #to=user@domain.de,ops@example.org&body=Hello%20there&subject=Hello
@@ -21,7 +19,6 @@ export function parseDeepLink(): { to: string[]; body: string; subject: string }
 }
 
 export function applyDeepLink(
-  recipientsInput: HTMLInputElement,
   bodyInput: HTMLTextAreaElement,
   subjectInput: HTMLInputElement,
   addRecipientBadge: (address: string) => void
@@ -38,7 +35,6 @@ export function applyDeepLink(
 
   for (const addr of to) {
     addRecipientBadge(addr);
-    debouncedLookup(addr, undefined, 0);
   }
 
   // Strip the fragment from the visible URL.

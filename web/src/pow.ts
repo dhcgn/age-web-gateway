@@ -16,19 +16,6 @@ export function expectedHashesForDifficulty(difficulty: number): number {
   return Math.pow(2, Math.max(0, difficulty));
 }
 
-export function expectedHashesByDifficultyRange(min: number, max: number): Array<{ difficulty: number; expectedHashes: number }> {
-  const out: Array<{ difficulty: number; expectedHashes: number }> = [];
-  const start = Math.min(min, max);
-  const end = Math.max(min, max);
-  for (let d = start; d <= end; d++) {
-    out.push({
-      difficulty: d,
-      expectedHashes: expectedHashesForDifficulty(d),
-    });
-  }
-  return out;
-}
-
 export function getDifficulty(): number {
   const meta = document.querySelector('meta[name="pow-difficulty"]');
   if (meta) {
@@ -55,7 +42,7 @@ export function getSendDifficulty(): number {
 function randomNonceStart(): number {
   const buf = new Uint32Array(1);
   crypto.getRandomValues(buf);
-  return buf[0];
+  return buf[0] ?? 0;
 }
 
 export async function solvePoW(
@@ -98,20 +85,14 @@ export async function solvePoW(
   }
 }
 
-function countLeadingZeroBits(hash: Uint8Array): number {
+export function countLeadingZeroBits(hash: Uint8Array): number {
   let count = 0;
   for (const byte of hash) {
     if (byte === 0) {
       count += 8;
       continue;
     }
-    for (let bit = 7; bit >= 0; bit--) {
-      if (byte & (1 << bit)) {
-        return count;
-      }
-      count++;
-    }
-    break;
+    return count + Math.clz32(byte) - 24;
   }
   return count;
 }

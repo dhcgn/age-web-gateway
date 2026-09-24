@@ -2,10 +2,12 @@ import { solvePoW, getDifficulty } from "./pow";
 
 export type SelectionReason = "single" | "pq-preferred" | "pq-unavailable";
 
+export type TrustLevel = "https" | "dnssec" | "dns";
+
 export interface LookupResult {
   recipient: string;
   found: boolean;
-  trust?: "https" | "dnssec" | "dns";
+  trust?: TrustLevel;
   recipients?: string[];
   selected_key?: string;
   selection_reason?: SelectionReason;
@@ -15,7 +17,7 @@ export interface LookupResult {
 
 export interface ResolvedRecipient {
   address: string;
-  trust: "https" | "dnssec" | "dns";
+  trust: TrustLevel;
   selectedKey: string;
   selectionReason: SelectionReason;
   delivery: string;
@@ -23,28 +25,23 @@ export interface ResolvedRecipient {
 }
 
 const resolved = new Map<string, ResolvedRecipient>();
-let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
 export function getResolvedRecipients(): ResolvedRecipient[] {
   return Array.from(resolved.values());
 }
 
-export function getWorstTrust(): "https" | "dnssec" | "dns" | null {
-  const trustOrder: Record<string, number> = { https: 3, dnssec: 2, dns: 1 };
-  let worst: string | null = null;
+export function getWorstTrust(): TrustLevel | null {
+  const trustOrder: Record<TrustLevel, number> = { https: 3, dnssec: 2, dns: 1 };
+  let worst: TrustLevel | null = null;
   let worstScore = Infinity;
   for (const r of resolved.values()) {
-    const score = trustOrder[r.trust] ?? 0;
+    const score = trustOrder[r.trust];
     if (score < worstScore) {
       worstScore = score;
       worst = r.trust;
     }
   }
-  return worst as "https" | "dnssec" | "dns" | null;
-}
-
-export function isAllResolved(): boolean {
-  return resolved.size > 0;
+  return worst;
 }
 
 export function removeRecipient(address: string): void {
@@ -118,18 +115,7 @@ export async function lookupRecipient(
   onUpdate();
 }
 
-export function debouncedLookup(
-  address: string,
-  setStatus?: (status: "loading" | "found" | "notfound" | "error") => void,
-  delayMs = 300
-): void {
-  if (debounceTimer) clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => {
-    lookupRecipient(address, setStatus);
-  }, delayMs);
-}
-
-export function trustIcon(trust: string): string {
+export function trustIcon(trust: TrustLevel): string {
   switch (trust) {
     case "https":
       return "🔒";
@@ -142,7 +128,7 @@ export function trustIcon(trust: string): string {
   }
 }
 
-export function trustLabel(trust: string): string {
+export function trustLabel(trust: TrustLevel): string {
   switch (trust) {
     case "https":
       return "verified via HTTPS";

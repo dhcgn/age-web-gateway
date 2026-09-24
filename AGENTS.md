@@ -1,4 +1,4 @@
-# Copilot Instructions — age-web-gateway
+# Instructions — age-web-gateway
 
 ## Build & Run
 
@@ -37,6 +37,8 @@ go vet ./...
 ```
 
 ## Architecture
+
+Consider also the file: [ARCHITECTURE.md](ARCHITECTURE.md)
 
 Single Go binary serves both API and embedded frontend. No database — only an in-memory PoW replay cache.
 

@@ -1,0 +1,35 @@
+{
+  "name": "age-web-gateway",
+  // Go 1.27 matches go.mod; Node 22 matches CI, Dockerfile and package engines.
+  "image": "mcr.microsoft.com/devcontainers/go:2-1.27-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.go",
+        "TypeScriptTeam.native-preview"
+      ]
+    }
+  },
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "age-web-gateway",
+      "onAutoForward": "notify"
+    }
+  },
+  // Isolated node_modules: the container's Linux platform binaries (esbuild,
+  // typescript) must not overwrite the host's install on the shared bind mount.
+  "mounts": [
+    "source=age-web-gateway-node_modules,target=/workspaces/age-web-gateway/web/node_modules,type=volume"
+  ],
+  // Warm caches and prove the toolchain works end to end (frontend dist is
+  // required for the Go embed, so build it before compiling the binary).
+  // The chown fixes ownership of the fresh node_modules volume (root-owned by
+  // default); the base image grants vscode passwordless sudo.
+  "postCreateCommand": "sudo mkdir -p web/node_modules && sudo chown vscode:vscode web/node_modules && go mod download && (cd web && npm ci --ignore-scripts && node build.mjs) && go build ./... && go test ./internal/... && (cd web && npm test)"
+}

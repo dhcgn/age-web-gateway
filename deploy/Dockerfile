@@ -9,7 +9,7 @@ COPY web/ .
 RUN node build.mjs
 
 # Stage 2: Build Go binary
-FROM golang:1.26-alpine AS backend
+FROM golang:1.27-alpine AS backend
 WORKDIR /app
 ARG VERSION=dev
 COPY go.mod go.sum ./

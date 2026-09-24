@@ -2,7 +2,6 @@ import {
   lookupRecipient,
   removeRecipient,
   getResolvedRecipients,
-  isAllResolved,
   getWorstTrust,
   setUpdateCallback,
   trustIcon,
@@ -10,134 +9,47 @@ import {
   clearRecipients,
   isPQKey,
 } from "./recipients";
-import { solvePoW, getDifficulty } from "./pow";
-import { sendMessage, SendProgress, RecipientSendResult } from "./send";
+import { sendMessage } from "./send";
+import type { SendProgress, RecipientSendResult } from "./send";
 import { applyDeepLink } from "./deeplink";
-
-const POW_PROGRESS_START = 15;
-const POW_PROGRESS_END = 78;
-
-function powBarPercent(completionProbability: number): number {
-  const clamped = Math.max(0, Math.min(0.99, completionProbability));
-  return POW_PROGRESS_START + clamped * (POW_PROGRESS_END - POW_PROGRESS_START);
-}
-
-// --- DOM elements ---
-const recipientsInput = document.getElementById("recipients-input") as HTMLInputElement;
-const recipientsList = document.getElementById("recipients-list") as HTMLDivElement;
-const recipientsError = document.getElementById("recipients-error") as HTMLDivElement;
-const trustWarning = document.getElementById("trust-warning") as HTMLDivElement;
-const trustWarningText = document.getElementById("trust-warning-text") as HTMLSpanElement;
-const bodyInput = document.getElementById("body-input") as HTMLTextAreaElement;
-const subjectInput = document.getElementById("subject-input") as HTMLInputElement;
-const dropZone = document.getElementById("drop-zone") as HTMLDivElement;
-const fileInput = document.getElementById("file-input") as HTMLInputElement;
-const fileList = document.getElementById("file-list") as HTMLUListElement;
-const progressSection = document.getElementById("progress-section") as HTMLDivElement;
-const progressBar = document.getElementById("progress-bar") as HTMLDivElement;
-const progressText = document.getElementById("progress-text") as HTMLSpanElement;
-const sendBtn = document.getElementById("send-btn") as HTMLButtonElement;
-const sizeWarning = document.getElementById("size-warning") as HTMLDivElement;
-const sizeWarningText = document.getElementById("size-warning-text") as HTMLSpanElement;
-const recentRecipientsBox = document.getElementById("recent-recipients") as HTMLDivElement;
-const recentRecipientsListEl = document.getElementById("recent-recipients-list") as HTMLDivElement;
-const recentRecipientsClearBtn = document.getElementById("recent-recipients-clear") as HTMLButtonElement;
-
-const RECENT_RECIPIENTS_STORAGE_KEY = "agemail.recent-recipients";
-const RECENT_RECIPIENTS_MAX = 15;
-
-function loadRecentRecipients(): string[] {
-  try {
-    const raw = localStorage.getItem(RECENT_RECIPIENTS_STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter((x): x is string => typeof x === "string");
-  } catch {
-    return [];
-  }
-}
-
-function saveRecentRecipients(list: string[]): void {
-  try {
-    localStorage.setItem(RECENT_RECIPIENTS_STORAGE_KEY, JSON.stringify(list));
-  } catch {
-    // ignore (private mode / quota)
-  }
-}
-
-function rememberRecipient(address: string): void {
-  const norm = address.trim();
-  if (!norm) return;
-  const list = loadRecentRecipients().filter((a) => a.toLowerCase() !== norm.toLowerCase());
-  list.unshift(norm);
-  if (list.length > RECENT_RECIPIENTS_MAX) list.length = RECENT_RECIPIENTS_MAX;
-  saveRecentRecipients(list);
-  renderRecentRecipients();
-}
-
-function forgetRecipient(address: string): void {
-  const norm = address.trim().toLowerCase();
-  const list = loadRecentRecipients().filter((a) => a.toLowerCase() !== norm);
-  saveRecentRecipients(list);
-  renderRecentRecipients();
-}
-
-function forgetAllRecipients(): void {
-  saveRecentRecipients([]);
-  renderRecentRecipients();
-}
-
-recentRecipientsClearBtn.addEventListener("click", () => {
-  if (loadRecentRecipients().length === 0) return;
-  if (confirm("Remove all recent recipients?")) {
-    forgetAllRecipients();
-  }
-});
-
-function renderRecentRecipients(): void {
-  const list = loadRecentRecipients();
-  recentRecipientsListEl.innerHTML = "";
-
-  if (list.length === 0) {
-    recentRecipientsBox.hidden = true;
-    return;
-  }
-  recentRecipientsBox.hidden = false;
-
-  for (const address of list) {
-    const chip = document.createElement("button");
-    chip.type = "button";
-    chip.className = "recent-chip";
-    chip.dataset.address = address;
-    chip.title = `Click to add ${address}`;
-
-    const label = document.createElement("span");
-    label.className = "recent-chip-label";
-    label.textContent = address;
-    chip.appendChild(label);
-
-    const removeSpan = document.createElement("span");
-    removeSpan.className = "recent-chip-remove";
-    removeSpan.textContent = "×";
-    removeSpan.title = "Remove from recent list";
-    removeSpan.setAttribute("role", "button");
-    removeSpan.addEventListener("click", (e) => {
-      e.stopPropagation();
-      forgetRecipient(address);
-    });
-    chip.appendChild(removeSpan);
-
-    chip.disabled = pendingAddresses.has(address);
-    chip.addEventListener("click", () => {
-      if (pendingAddresses.has(address)) return;
-      addRecipientBadge(address);
-      updateUI();
-    });
-
-    recentRecipientsListEl.appendChild(chip);
-  }
-}
+import {
+  recipientsInput,
+  recipientsList,
+  trustWarning,
+  trustWarningText,
+  bodyInput,
+  subjectInput,
+  dropZone,
+  fileInput,
+  fileList,
+  progressSection,
+  progressBar,
+  progressText,
+  sendBtn,
+  sizeWarning,
+  sizeWarningText,
+  recentRecipientsListEl,
+  statusDiv,
+  copyUrlLink,
+  privacyNotice,
+  privacyNoticeDismiss,
+} from "./ui/elements";
+import {
+  POW_PROGRESS_START,
+  powBarPercent,
+  parseRecipientTokens,
+  formatWarnings,
+} from "./ui/utils";
+import { initDebugSection } from "./ui/debug";
+import { appendRecordDownloadButton } from "./ui/send-record";
+import type { SendSnapshot } from "./ui/send-record";
+import { consumeSharedPayload } from "./ui/share-intake";
+import {
+  initRecentRecipients,
+  rememberRecipient,
+} from "./ui/recent-recipients";
+import type { RecentRecipientsDeps } from "./ui/recent-recipients";
+import type { ShareIntakeDeps } from "./ui/share-intake";
 
 function getMaxSizeMB(): number {
   const meta = document.querySelector('meta[name="mail-backend-max-size-mb"]');
@@ -169,26 +81,9 @@ function updateSizeWarning(): void {
     sizeWarning.hidden = true;
   }
 }
-const statusDiv = document.getElementById("status") as HTMLDivElement;
-const copyUrlLink = document.getElementById("copy-url-link") as HTMLAnchorElement;
-
-const debugSection = document.getElementById("debug-section") as HTMLDivElement | null;
-const debugDifficultyInput = document.getElementById("debug-difficulty-input") as HTMLInputElement | null;
-const debugApplyDifficultyBtn = document.getElementById("debug-apply-difficulty") as HTMLButtonElement | null;
-const debugCurrentDifficulty = document.getElementById("debug-current-difficulty") as HTMLSpanElement | null;
-const debugTestPowBtn = document.getElementById("debug-test-pow") as HTMLButtonElement | null;
-const debugPowResult = document.getElementById("debug-pow-result") as HTMLPreElement | null;
-
 // --- State ---
 const pendingAddresses = new Set<string>();
 const files: File[] = [];
-
-function parseRecipientTokens(raw: string): string[] {
-  return raw
-    .split(/[\s,;]+/)
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
 
 function getLinkRecipients(): string[] {
   const values = new Set<string>(pendingAddresses);
@@ -221,113 +116,6 @@ function commitRecipientsFromInput(): void {
     addRecipientBadge(address);
   }
   recipientsInput.value = "";
-}
-
-function isLocalhost(): boolean {
-  return (
-    location.hostname === "localhost" ||
-    location.hostname === "127.0.0.1" ||
-    location.hostname === "::1" ||
-    location.hostname === "[::1]"
-  );
-}
-
-function setDifficultyMeta(value: number): void {
-  const meta = document.querySelector('meta[name="pow-difficulty"]') as HTMLMetaElement | null;
-  if (meta) {
-    meta.content = String(value);
-  }
-}
-
-function syncDebugDifficulty(): void {
-  if (!debugCurrentDifficulty || !debugDifficultyInput) {
-    return;
-  }
-  const difficulty = getDifficulty();
-  debugCurrentDifficulty.textContent = String(difficulty);
-  debugDifficultyInput.value = String(difficulty);
-}
-
-function initDebugSection(): void {
-  if (!debugSection) {
-    return;
-  }
-
-  if (!isLocalhost()) {
-    debugSection.hidden = true;
-    return;
-  }
-
-  debugSection.hidden = false;
-  syncDebugDifficulty();
-
-  debugApplyDifficultyBtn?.addEventListener("click", () => {
-    if (!debugDifficultyInput || !debugPowResult) {
-      return;
-    }
-    const parsed = parseInt(debugDifficultyInput.value, 10);
-    if (isNaN(parsed) || parsed < 0 || parsed > 30) {
-      debugPowResult.textContent = "Please enter a PoW difficulty between 0 and 30.";
-      return;
-    }
-    setDifficultyMeta(parsed);
-    syncDebugDifficulty();
-    debugPowResult.textContent = `PoW difficulty set to ${parsed}.`;
-  });
-
-  debugTestPowBtn?.addEventListener("click", async () => {
-    if (!debugPowResult || !debugTestPowBtn) {
-      return;
-    }
-
-    const difficulty = getDifficulty();
-    let hashesChecked = 0;
-    const started = performance.now();
-
-    debugTestPowBtn.disabled = true;
-    debugPowResult.textContent = `Running PoW test at difficulty ${difficulty}...`;
-
-    try {
-      const token = await solvePoW(difficulty, (progress) => {
-        hashesChecked = progress.hashesChecked;
-        debugPowResult.textContent = `Running PoW test at difficulty ${difficulty}...\nTried ${hashesChecked.toLocaleString()} hashes.`;
-      });
-      const elapsedMs = Math.round(performance.now() - started);
-      debugPowResult.textContent =
-        `Done.\n` +
-        `Difficulty: ${difficulty}\n` +
-        `Time: ${elapsedMs} ms\n` +
-        `Hashes checked: ${hashesChecked.toLocaleString()}\n` +
-        `Token: ${token}`;
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "PoW test failed";
-      debugPowResult.textContent = `Error: ${msg}`;
-    } finally {
-      debugTestPowBtn.disabled = false;
-    }
-  });
-}
-
-// formatWarning strips low-level detail from server warnings so the UI
-// shows a short, human-readable label rather than a raw record line.
-function formatWarning(w: string): string {
-  if (w.startsWith("ignored malformed record")) {
-    return "ignored malformed record";
-  }
-  return w;
-}
-
-function formatWarnings(warnings: string[]): string[] {
-  const seen = new Set<string>();
-  const out: string[] = [];
-  for (const w of warnings) {
-    const f = formatWarning(w);
-    if (!seen.has(f)) {
-      seen.add(f);
-      out.push(f);
-    }
-  }
-  return out;
 }
 
 // --- Recipient badge management ---
@@ -409,7 +197,7 @@ function addRecipientBadge(address: string): void {
             note.hidden = true;
           }
 
-          rememberRecipient(address);
+          rememberRecipient(address, recentDeps);
         }
         break;
       }
@@ -526,9 +314,11 @@ function addFiles(newFiles: File[]): void {
 function renderFileList(): void {
   fileList.innerHTML = "";
   for (let i = 0; i < files.length; i++) {
+    const f = files[i];
+    if (!f) continue;
     const li = document.createElement("li");
-    const sizeKB = (files[i].size / 1024).toFixed(1);
-    li.textContent = `${files[i].name} (${sizeKB} KB)`;
+    const sizeKB = (f.size / 1024).toFixed(1);
+    li.textContent = `${f.name} (${sizeKB} KB)`;
     const removeBtn = document.createElement("button");
     removeBtn.textContent = "remove";
     removeBtn.addEventListener("click", () => {
@@ -579,79 +369,6 @@ function updateUI(): void {
     const addr = chip.dataset.address ?? "";
     chip.disabled = pendingAddresses.has(addr);
   }
-}
-
-// --- Send record download ---
-interface SendSnapshot {
-  date: Date;
-  results: RecipientSendResult[];
-  subject: string;
-  body: string;
-  files: Array<{ name: string; size: number; type: string }>;
-}
-
-function buildRecordText(s: SendSnapshot): string {
-  const lines: string[] = [];
-  lines.push("agemail — send record");
-  lines.push(`Date: ${s.date.toISOString()}`);
-  lines.push("");
-  lines.push(`Recipients (${s.results.length}):`);
-  for (const r of s.results) {
-    const status = r.ok ? "OK" : `FAILED: ${r.error ?? "unknown"}`;
-    lines.push(`  - ${r.address}  [${status}]`);
-  }
-  lines.push("");
-  lines.push(`Subject (not encrypted): ${s.subject || "(none)"}`);
-  lines.push("");
-  lines.push("Message:");
-  lines.push(s.body || "(empty)");
-  lines.push("");
-  if (s.files.length > 0) {
-    lines.push(`Attachments (${s.files.length}):`);
-    for (const f of s.files) {
-      const kb = (f.size / 1024).toFixed(1);
-      lines.push(`  - ${f.name}  (${kb} KB, ${f.type || "unknown type"})`);
-    }
-  } else {
-    lines.push("Attachments: none");
-  }
-  lines.push("");
-  lines.push("Note: this record is for your reference. The message itself was end-to-end");
-  lines.push("encrypted with age and is not stored anywhere outside the recipients' mailboxes.");
-  return lines.join("\n");
-}
-
-function downloadRecord(s: SendSnapshot): void {
-  const text = buildRecordText(s);
-  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  const stamp = s.date.toISOString().replace(/[:.]/g, "-").slice(0, 19);
-  a.href = url;
-  a.download = `agemail-record-${stamp}.txt`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-function appendRecordDownloadButton(s: SendSnapshot): void {
-  const wrap = document.createElement("div");
-  wrap.className = "record-download";
-
-  const note = document.createElement("span");
-  note.className = "record-download-note";
-  note.textContent = "Want a local copy of what you sent?";
-
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = "record-download-btn";
-  btn.textContent = "Download record";
-  btn.addEventListener("click", () => downloadRecord(s));
-
-  wrap.appendChild(note);
-  wrap.appendChild(btn);
-  statusDiv.appendChild(wrap);
 }
 
 // --- Send ---
@@ -735,6 +452,8 @@ sendBtn.addEventListener("click", async () => {
           case "error":
             progressText.textContent = p.message;
             break;
+          default:
+            throw new Error(`Unhandled progress stage: ${p satisfies never}`);
         }
       }
     );
@@ -780,17 +499,19 @@ sendBtn.addEventListener("click", async () => {
 // --- Privacy notice ---
 const PRIVACY_NOTICE_STORAGE_KEY = "agemail.privacy-notice-dismissed-at";
 const PRIVACY_NOTICE_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
-const privacyNotice = document.getElementById("privacy-notice") as HTMLElement | null;
-const privacyNoticeDismiss = document.getElementById("privacy-notice-dismiss") as HTMLButtonElement | null;
-if (privacyNotice && privacyNoticeDismiss) {
+// Local aliases: narrowing an imported binding does not carry into the nested
+// click closure, but narrowing a local const does.
+const noticeEl = privacyNotice;
+const noticeDismissBtn = privacyNoticeDismiss;
+if (noticeEl && noticeDismissBtn) {
   const raw = localStorage.getItem(PRIVACY_NOTICE_STORAGE_KEY);
   const dismissedAt = raw ? parseInt(raw, 10) : 0;
   const expired = !dismissedAt || Date.now() - dismissedAt > PRIVACY_NOTICE_TTL_MS;
   if (expired) {
-    privacyNotice.hidden = false;
+    noticeEl.hidden = false;
   }
-  privacyNoticeDismiss.addEventListener("click", () => {
-    privacyNotice.hidden = true;
+  noticeDismissBtn.addEventListener("click", () => {
+    noticeEl.hidden = true;
     try {
       localStorage.setItem(PRIVACY_NOTICE_STORAGE_KEY, String(Date.now()));
     } catch {
@@ -800,12 +521,37 @@ if (privacyNotice && privacyNoticeDismiss) {
 }
 
 // --- Recent recipients (load from localStorage) ---
-renderRecentRecipients();
+const recentDeps: RecentRecipientsDeps = {
+  isPending: (address) => pendingAddresses.has(address),
+  select: (address) => {
+    addRecipientBadge(address);
+    updateUI();
+  },
+};
+
+const shareDeps: ShareIntakeDeps = {
+  addFiles,
+  refresh: () => {
+    updateSizeWarning();
+    updateUI();
+  },
+};
+
+initRecentRecipients(recentDeps);
 
 // --- Deep-link ---
-applyDeepLink(recipientsInput, bodyInput, subjectInput, addRecipientBadge);
+applyDeepLink(bodyInput, subjectInput, addRecipientBadge);
 initDebugSection();
 updateUI();
+void consumeSharedPayload(shareDeps);
+
+// Register the service worker (share target + installability). The app works
+// fully without it; failure just means those extras are unavailable.
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js").catch(() => {
+    // ignore (e.g. insecure context)
+  });
+}
 
 // --- Copy URL with recipients ---
 copyUrlLink.addEventListener("click", (e) => {

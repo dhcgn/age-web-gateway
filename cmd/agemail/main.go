@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"log/slog"
+	"mime"
 	"net/http"
 	"os"
 	"runtime/debug"
@@ -24,6 +25,14 @@ import (
 //
 //	go build -ldflags "-X main.buildVersion=v0.0.5"
 var buildVersion = "dev"
+
+func init() {
+	// Go's mime database has no entry for .webmanifest; without this the PWA
+	// manifest would be served as text/plain and browsers may reject it.
+	if err := mime.AddExtensionType(".webmanifest", "application/manifest+json"); err != nil {
+		panic(err)
+	}
+}
 
 func main() {
 	configPath := flag.String("config", "", "path to JSON config file (optional, env vars override)")
@@ -133,8 +142,18 @@ func main() {
 			w.Write(indexHTML)
 			return
 		}
+		// Service worker updates are byte-compared by the browser; don't let
+		// intermediaries serve a stale copy.
+		if r.URL.Path == "/sw.js" {
+			w.Header().Set("Cache-Control", "max-age=0")
+		}
 		staticHandler.ServeHTTP(w, r)
 	})
+
+	// Share target fallback. The service worker always intercepts share POSTs
+	// in practice; if one ever reaches the server (no controlling worker),
+	// reject it without reading the body so plaintext is never processed.
+	mux.Handle("/share-target", shareTargetHandler(indexHTML))
 
 	// Wrap everything with security headers.
 	handler := api.CSPMiddleware(api.CORSMiddleware(cfg.CORSAllowedOrigins)(mux))
@@ -157,6 +176,21 @@ func main() {
 	if err := server.ListenAndServe(); err != nil {
 		slog.Error("server failed", "error", err)
 		os.Exit(1)
+	}
+}
+
+// shareTargetHandler serves the app for manual GET visits and rejects share
+// POSTs that reach the server (no controlling service worker) with 405
+// without reading the request body, so shared plaintext is never processed.
+func shareTargetHandler(indexHTML []byte) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			w.Write(indexHTML)
+			return
+		}
+		w.Header().Set("Allow", http.MethodGet)
+		http.Error(w, "share intents are handled on-device by the service worker", http.StatusMethodNotAllowed)
 	}
 }
 

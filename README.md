@@ -2,7 +2,6 @@
 
 [![CI](https://github.com/dhcgn/age-web-gateway/actions/workflows/ci.yml/badge.svg)](https://github.com/dhcgn/age-web-gateway/actions/workflows/ci.yml)
 [![Release](https://github.com/dhcgn/age-web-gateway/actions/workflows/release.yml/badge.svg)](https://github.com/dhcgn/age-web-gateway/actions/workflows/release.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/dhcgn/age-web-gateway)](https://goreportcard.com/report/github.com/dhcgn/age-web-gateway)
 ![GitHub go.mod Go version (branch)](https://img.shields.io/github/go-mod/go-version/dhcgn/age-web-gateway/main)
 [![GitHub Release](https://img.shields.io/github/v/release/dhcgn/age-web-gateway)](https://github.com/dhcgn/age-web-gateway/releases)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fage.hdev.io%2F&label=Website)](https://age.hdev.io/)
@@ -89,6 +88,17 @@ Option 2: run container (GHCR)
 
 You can configure via config file and/or environment variables.
 See config.example.json for available settings.
+
+## Development
+
+Open this repo in VS Code with the Dev Containers extension: it provides
+Go 1.27 and Node 22 plus all dependencies (see `.devcontainer/`).
+
+## Install as app (PWA)
+
+The web UI is installable (Android: browser menu → "Install app") and
+registers as an Android share target: sharing files from any app opens
+age-mail with them pre-attached (shared text lands in the message body).
 
 ## Project docs and config
 
