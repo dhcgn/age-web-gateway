@@ -2,7 +2,6 @@ import {
   lookupRecipient,
   removeRecipient,
   getResolvedRecipients,
-  isAllResolved,
   getWorstTrust,
   setUpdateCallback,
   trustIcon,

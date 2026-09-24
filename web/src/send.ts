@@ -1,4 +1,4 @@
-import { solvePoW, getSendDifficulty } from "./pow";
+import { solvePoW, getSendDifficulty, expectedHashesForDifficulty } from "./pow";
 import { encryptBody, encryptFile } from "./encrypt";
 import { getResolvedRecipients, ResolvedRecipient } from "./recipients";
 
@@ -95,7 +95,7 @@ async function sendForOneRecipient(
       stage: "pow",
       difficulty,
       hashesChecked: 0,
-      expectedHashes: Math.pow(2, Math.max(0, difficulty)),
+      expectedHashes: expectedHashesForDifficulty(difficulty),
       completionProbability: 0,
       recipientIndex,
       recipientTotal,

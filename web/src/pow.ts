@@ -16,19 +16,6 @@ export function expectedHashesForDifficulty(difficulty: number): number {
   return Math.pow(2, Math.max(0, difficulty));
 }
 
-export function expectedHashesByDifficultyRange(min: number, max: number): Array<{ difficulty: number; expectedHashes: number }> {
-  const out: Array<{ difficulty: number; expectedHashes: number }> = [];
-  const start = Math.min(min, max);
-  const end = Math.max(min, max);
-  for (let d = start; d <= end; d++) {
-    out.push({
-      difficulty: d,
-      expectedHashes: expectedHashesForDifficulty(d),
-    });
-  }
-  return out;
-}
-
 export function getDifficulty(): number {
   const meta = document.querySelector('meta[name="pow-difficulty"]');
   if (meta) {
