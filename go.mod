@@ -1,6 +1,6 @@
 module github.com/dhcgn/age-web-gateway
 
-go 1.26
+go 1.27
 
 require github.com/miekg/dns v1.1.72
 
