@@ -85,20 +85,14 @@ export async function solvePoW(
   }
 }
 
-function countLeadingZeroBits(hash: Uint8Array): number {
+export function countLeadingZeroBits(hash: Uint8Array): number {
   let count = 0;
   for (const byte of hash) {
     if (byte === 0) {
       count += 8;
       continue;
     }
-    for (let bit = 7; bit >= 0; bit--) {
-      if (byte & (1 << bit)) {
-        return count;
-      }
-      count++;
-    }
-    break;
+    return count + Math.clz32(byte) - 24;
   }
   return count;
 }

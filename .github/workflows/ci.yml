@@ -34,6 +34,10 @@ jobs:
         working-directory: web
         run: npx tsc --noEmit
 
+      - name: Test frontend
+        working-directory: web
+        run: npm test
+
       - name: Build frontend
         working-directory: web
         run: node build.mjs
