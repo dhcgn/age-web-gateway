@@ -89,6 +89,11 @@ Option 2: run container (GHCR)
 You can configure via config file and/or environment variables.
 See config.example.json for available settings.
 
+## Development
+
+Open this repo in VS Code with the Dev Containers extension: it provides
+Go 1.27 and Node 22 plus all dependencies (see `.devcontainer/`).
+
 ## Project docs and config
 
 - Architecture: [ARCHITECTURE.md](ARCHITECTURE.md)

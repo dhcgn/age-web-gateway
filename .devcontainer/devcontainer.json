@@ -1,0 +1,28 @@
+{
+  "name": "age-web-gateway",
+  // Go 1.27 matches go.mod; Node 22 matches CI, Dockerfile and package engines.
+  "image": "mcr.microsoft.com/devcontainers/go:2-1.27-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.go",
+        "TypeScriptTeam.native-preview"
+      ]
+    }
+  },
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "age-web-gateway",
+      "onAutoForward": "notify"
+    }
+  },
+  // Warm caches and prove the toolchain works end to end (frontend dist is
+  // required for the Go embed, so build it before compiling the binary).
+  "postCreateCommand": "go mod download && (cd web && npm ci --ignore-scripts && node build.mjs) && go build ./... && go test ./internal/... && (cd web && npm test)"
+}
