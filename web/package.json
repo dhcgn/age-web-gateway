@@ -7,10 +7,10 @@
     "watch": "node build.mjs --watch"
   },
   "dependencies": {
-    "age-encryption": "^0.3.0"
+    "age-encryption": "^0.3.1"
   },
   "devDependencies": {
-    "esbuild": "^0.28.1",
+    "esbuild": "^0.28.2",
     "typescript": "^5.7.0"
   }
 }
