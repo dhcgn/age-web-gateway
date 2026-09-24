@@ -1,11 +1,12 @@
 import { solvePoW, getSendDifficulty, expectedHashesForDifficulty } from "./pow";
 import { encryptBody, encryptFile } from "./encrypt";
-import { getResolvedRecipients, ResolvedRecipient } from "./recipients";
+import { getResolvedRecipients } from "./recipients";
+import type { ResolvedRecipient } from "./recipients";
 
 function uint8ToBase64(bytes: Uint8Array): string {
   let binary = "";
-  for (let i = 0; i < bytes.length; i++) {
-    binary += String.fromCharCode(bytes[i]);
+  for (const b of bytes) {
+    binary += String.fromCharCode(b);
   }
   return btoa(binary);
 }
@@ -71,6 +72,8 @@ async function sendForOneRecipient(
   // 2. Encrypt files.
   const attachments: Array<{ payload: string; meta: string }> = [];
   for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    if (!file) continue;
     if (onProgress) {
       onProgress({
         stage: "encrypting",
@@ -81,7 +84,7 @@ async function sendForOneRecipient(
         recipientAddress: recipient.address,
       });
     }
-    const { payload, meta } = await encryptFile(files[i], keys);
+    const { payload, meta } = await encryptFile(file, keys);
     attachments.push({
       payload: uint8ToBase64(payload),
       meta: uint8ToBase64(meta),
@@ -169,6 +172,7 @@ export async function sendMessage(
   const results: RecipientSendResult[] = [];
   for (let i = 0; i < recipients.length; i++) {
     const r = recipients[i];
+    if (!r) continue;
     try {
       await sendForOneRecipient(
         r,

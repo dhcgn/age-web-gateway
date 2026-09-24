@@ -10,7 +10,8 @@ import {
   isPQKey,
 } from "./recipients";
 import { solvePoW, getDifficulty } from "./pow";
-import { sendMessage, SendProgress, RecipientSendResult } from "./send";
+import { sendMessage } from "./send";
+import type { SendProgress, RecipientSendResult } from "./send";
 import { applyDeepLink } from "./deeplink";
 
 const POW_PROGRESS_START = 15;
@@ -525,9 +526,11 @@ function addFiles(newFiles: File[]): void {
 function renderFileList(): void {
   fileList.innerHTML = "";
   for (let i = 0; i < files.length; i++) {
+    const f = files[i];
+    if (!f) continue;
     const li = document.createElement("li");
-    const sizeKB = (files[i].size / 1024).toFixed(1);
-    li.textContent = `${files[i].name} (${sizeKB} KB)`;
+    const sizeKB = (f.size / 1024).toFixed(1);
+    li.textContent = `${f.name} (${sizeKB} KB)`;
     const removeBtn = document.createElement("button");
     removeBtn.textContent = "remove";
     removeBtn.addEventListener("click", () => {
@@ -734,6 +737,8 @@ sendBtn.addEventListener("click", async () => {
           case "error":
             progressText.textContent = p.message;
             break;
+          default:
+            throw new Error(`Unhandled progress stage: ${p satisfies never}`);
         }
       }
     );
